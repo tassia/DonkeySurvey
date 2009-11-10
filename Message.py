@@ -202,8 +202,8 @@ class Message():
         uploaded = self.decode_int("q", raw_data, 18 + file_len) 
         requests = self.decode_int("l", raw_data, 26 + file_len) 
         self.print_msg("FileID: %d | NetworkID: %d | FileName: %s | FileSize: %d | Uploaded: %d | Requests: %d ", (file_id, netid, file, file_size, uploaded, requests))
-#        self.send('<lhl', [OPCODE("GetFileInfo"), file_id])
-        print file_id
+        # TODO
+        # self.send('<lhl', [OPCODE("GetFileInfo"), file_id])
         return file_id
 
     # FileRemoveSource
