@@ -2,6 +2,13 @@
 
 import struct
 import binascii
+import sys
+
+sys.path.append('../database')
+sys.path.append('../database/entities')
+
+from FileDAO import FileDAO
+from File import File
 
 class Message():
     def __init__(self, opcode, raw_data, config):
@@ -221,6 +228,7 @@ class Message():
         for i in range(pfile_names_len):
 	    file_name_len = self.decode_int("h", raw_data, offset)
 	    file_name = self.decode_string(raw_data, offset)
+	    file_name2 = file_name
 	    offset += 2 + file_name_len
 	    self.print_msg("--- PossibleFileName: %s", (file_name))
         file_md4 = struct.unpack_from("<16c", raw_data, offset)
@@ -270,6 +278,12 @@ class Message():
         file_age = self.decode_int("l", raw_data, offset)
 	offset += 4
         print "FileID: %d | FileMD4 %s | FileSize: %d | DownloadState: %d" % (file_id, str.upper(binascii.hexlify("".join(file_md4))), file_size, file_state)
+        fdao = FileDAO()
+	file = File()
+	file.hash = str.upper(binascii.hexlify("".join(file_md4)))
+	file.size = file_size
+	file.bestName = file_name2
+	fdao.insert(file)
 
     def print_msg(self, msg, args):
         if self.config.DEBUG:

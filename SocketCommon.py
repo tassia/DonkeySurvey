@@ -53,7 +53,6 @@ class SocketCommon():
             msg.print_msg("RECV %d bytes | Opcode = %d (%s)", (length, opcode, OPCODE_RECV[str(opcode)]))
             if opcode is 48:
                 file_id = msg.decode()
-                print file_id
                 self.send('<lhl', [OPCODE("GetFileInfo"), file_id])
             else:
                 msg.decode()
