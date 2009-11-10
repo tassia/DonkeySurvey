@@ -4,11 +4,10 @@ import struct
 import binascii
 
 class Message():
-    def __init__(self, opcode, raw_data, debug, output):
+    def __init__(self, opcode, raw_data, config):
         self.opcode = opcode
         self.raw_data = raw_data
-        self.debug = debug
-        self.output = output
+        self.config = config
 
     def decode_string(self,data, offset):
         str_len = struct.unpack_from('<h', data, offset)
@@ -27,21 +26,21 @@ class Message():
     def decode(self):
         if self.opcode is 9:
             self.decode_msg_9(self.raw_data)
-        if self.opcode is 10:
+        elif self.opcode is 10:
             self.decode_msg_10(self.raw_data)
-        if self.opcode is 15:
+        elif self.opcode is 15:
             self.decode_msg_15(self.raw_data)
-        if self.opcode is 16:
+        elif self.opcode is 16:
             self.decode_msg_16(self.raw_data)
-        if self.opcode is 20:
+        elif self.opcode is 20:
             self.decode_msg_20(self.raw_data)
-        if self.opcode is 46:
+        elif self.opcode is 46:
             self.decode_msg_46(self.raw_data)
-        if self.opcode is 48:
+        elif self.opcode is 48:
             return self.decode_msg_48(self.raw_data)
-        if self.opcode is 50:
+        elif self.opcode is 50:
             self.decode_msg_50(self.raw_data)
-        if self.opcode is 52:
+        elif self.opcode is 52:
             self.decode_msg_52(self.raw_data)
     
     # FileUpdateAvailability
@@ -273,12 +272,12 @@ class Message():
         print "FileID: %d | FileMD4 %s | FileSize: %d | DownloadState: %d" % (file_id, str.upper(binascii.hexlify("".join(file_md4))), file_size, file_state)
 
     def print_msg(self, msg, args):
-        if self.debug:
-            if self.output is None:
+        if self.config.DEBUG:
+            if self.config.OUTPUT_FILE is None:
                 print "DEBUG: " + msg % args
             else:
                 try:
-                    FILE = open(self.output, "a")
+                    FILE = open(self.config.OUTPUT_FILE, "a")
                     FILE.write("DEBUG: " + msg % args + "\n")
                     FILE.close()
                 except IOError, msg:

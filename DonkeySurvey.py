@@ -5,18 +5,10 @@ import getopt
 import thread
 import time
 
+from Config import Config
+
 from Client import Client
 from Listener import Listener
-
-# Default values
-HOST = "127.0.0.1"
-PORT = 4001
-USER = "admin"
-PASSWORD = ""
-DEBUG=0
-VERBOSE=0
-OUTPUT_FILE=None
-GUI_PROTO_VERSION=41
 
 def usage():
     print "Syntax error"
@@ -30,10 +22,10 @@ def usage():
     print "  -P, --pass=PASS    Password for authentication. (Default empty)"
 
 def get_args():
-    global HOST,PORT,USER,PASSWORD,DEBUG,VERBOSE,OUTPUT_FILE
+    config = Config()
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hdo:H:p:U:P:",
-                                   ["help", "debug", "output=", "host=", "port=", "user=", "pass="])
+        opts, args = getopt.getopt(sys.argv[1:], "hdvo:H:p:U:P:",
+                                   ["help", "debug", "verbose", "output=", "host=", "port=", "user=", "pass="])
     except getopt.GetoptError, err:
         print str(err)
         usage()
@@ -43,29 +35,35 @@ def get_args():
             usage()
             sys.exit()
         elif o in ("-d", "--debug"):
-            DEBUG = 1
+            config.DEBUG = 1
         elif o in ("-v", "--verbose"):
-            VERBOSE = 1
+            config.VERBOSE = 1
         elif o in ("-o", "--output"):
-            OUTPUT_FILE = a
+            config.OUTPUT_FILE = a
         elif o in ("-H", "--host"):
-            HOST = a
+            config.HOST = a
         elif o in ("-p", "--port"):
-            PORT = int(a)
+            config.PORT = int(a)
         elif o in ("-U", "--user"):
-            USER = a
+            config.USER = a
         elif o in ("-P", "--pass"):
-            PASSWORD = a
+            config.PASSWORD = a
         else:
             assert False, "unhandled option"
 
+    return config
+
 def main():
-    get_args()
+    config = get_args()
 
     # Start mldonkey Connection Phase without pool mode
     # Connect and start listener thread
-    mldonkey = Client(HOST, PORT, USER, PASSWORD, GUI_PROTO_VERSION, DEBUG, VERBOSE, OUTPUT_FILE)
+    mldonkey = Client(config)
     mldonkey.connect()
+
+    # Start listener thread to receive server msgs 
+    listener = Listener("Listener", mldonkey.connection, config)
+    thread.start_new_thread(listener.start, ())
 
     while 1:time.sleep(0)
     #while 1:pass
