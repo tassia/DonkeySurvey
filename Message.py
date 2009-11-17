@@ -286,12 +286,12 @@ class Message():
 	fdao.insert(file)
 
     def print_msg(self, msg, args):
-        if self.config.DEBUG:
-            if self.config.OUTPUT_FILE is None:
+        if self.config.debug:
+            if self.config.output_filename is None:
                 print "DEBUG: " + msg % args
             else:
                 try:
-                    FILE = open(self.config.OUTPUT_FILE, "a")
+                    FILE = open(self.config.output_filename, "a")
                     FILE.write("DEBUG: " + msg % args + "\n")
                     FILE.close()
                 except IOError, msg:

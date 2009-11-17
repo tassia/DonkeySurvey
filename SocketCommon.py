@@ -5,6 +5,8 @@ from GUIProtoDefinitions import *
 from Config import *
 from Message import *
 
+from Constants import *
+
 class SocketCommon():
     def send_login(self, login, password):
         login_l=len(login)
@@ -13,7 +15,7 @@ class SocketCommon():
         self.send(format, [OPCODE("PassWord"), password_l, password, login_l, login])
 
     def send(self, format, data):
-        length = struct.calcsize(format)-self.config.SIZE_LEN
+        length = struct.calcsize(format)-SIZE_LEN
         # TODO
         # Message().print_msg("SEND %d bytes | Opcode = %d (%s)", (length, data[0], OPCODE_SENT[str(data[0])]))
         data = struct.pack(format, length, *data)
@@ -22,7 +24,7 @@ class SocketCommon():
     def read_length(self):
         # TODO: Fix-me when password is invalid
         try:
-            data = struct.unpack('<l', self.connection.recv(self.config.SIZE_LEN))[0]
+            data = struct.unpack('<l', self.connection.recv(SIZE_LEN))[0]
         except socket.error, msg:
             data = None
             # print socket.error, msg
@@ -30,7 +32,7 @@ class SocketCommon():
 
     def read_opcode(self):
         try:
-            data = struct.unpack('<h', self.connection.recv(self.config.SIZE_OPCODE))[0]
+            data = struct.unpack('<h', self.connection.recv(SIZE_OPCODE))[0]
         except socket.error, msg:
             data = None
             # print socket.error, msg
@@ -38,7 +40,7 @@ class SocketCommon():
 
     def read_data(self, length):
         try:
-            data = self.connection.recv(length-self.config.SIZE_OPCODE)
+            data = self.connection.recv(length-SIZE_OPCODE)
         except socket.error, msg:
             data = None
             # print socket.error, msg

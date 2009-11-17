@@ -17,7 +17,7 @@ class Client(SocketCommon):
 
     def connect(self):
         print "* Connecting to mldonkey...",
-        for res in socket.getaddrinfo(self.config.HOST, self.config.PORT, socket.AF_UNSPEC,
+        for res in socket.getaddrinfo(self.config.hostname, self.config.port, socket.AF_UNSPEC,
                                       socket.SOCK_STREAM):
             af, socktype, proto, canonname, sa = res
             try:
@@ -45,11 +45,11 @@ class Client(SocketCommon):
 
         # Send Client Protocol Version
         print "* Sending protocol version..."
-        self.send('<lhl', [OPCODE("ProtocolVersion"), self.config.GUI_PROTO_VERSION])
+        self.send('<lhl', [OPCODE("ProtocolVersion"), GUI_PROTO_VERSION])
 
         # Send login and password
         print "* Sending user and password..."
-        self.send_login(self.config.USER,self.config.PASSWORD)
+        self.send_login(self.config.username,self.config.password)
 
         # Set connection non-blocking
         self.connection.setblocking(0)
