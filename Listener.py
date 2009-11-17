@@ -3,6 +3,7 @@
 import sys
 import struct
 import socket
+import logging
 
 from GUIProtoDefinitions import *
 from Message import Message
@@ -15,5 +16,6 @@ class Listener(SocketCommon):
         self.config = config
 
     def start(self):
+        logging.info("Starting listener...")
         while(1):
             self.read()

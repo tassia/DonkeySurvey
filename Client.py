@@ -33,7 +33,7 @@ class Client(SocketCommon):
                 continue
             break
         if s is None:
-            logging.error("Could not open socket with mldonkey server: %d - %s", (msg[0], msg[1]))
+            logging.error("Could not open socket with mldonkey server: %d - %s", msg[0], msg[1])
             sys.exit(-1)
 
         logging.info("Connected to mldonkey.")

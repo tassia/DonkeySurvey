@@ -10,7 +10,7 @@ from ConfigParser import *
 class Config():
    def __init__(self):
        self.debug = 0
-       self.output_filename = None
+       self.output_filename = "/dev/null"
        self.hostname = "127.0.0.1"
        self.port = 4001
        self.username = "admin"
@@ -40,7 +40,7 @@ class Config():
            self.config.read(['/etc/donkeysurvey/donkeysurvey.conf', 
                              os.path.expanduser('~/.donkeysurveyrc')])
        except (MissingSectionHeaderError), err:
-           logging.exception("Error in config file syntax: %s", str(err))
+           logging.error("Error in config file syntax: %s", str(err))
            sys.exit(2)
  
        self.debug = self.read_option('general', 'debug')
@@ -56,7 +56,7 @@ class Config():
        try:
            opts, args = getopt.getopt(sys.argv[1:], short_options, long_options)
        except getopt.GetoptError, err:
-           logging.exception("Error parsing args: %s", str(err))
+           logging.error("Error parsing args: %s", str(err))
            self.usage()
            sys.exit(2)
 
