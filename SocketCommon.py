@@ -1,5 +1,8 @@
+#!/usr/bin/python
+
 import socket
 import struct
+import logging
 
 from GUIProtoDefinitions import *
 from Config import *
@@ -16,8 +19,7 @@ class SocketCommon():
 
     def send(self, format, data):
         length = struct.calcsize(format)-SIZE_LEN
-        # TODO
-        # Message().print_msg("SEND %d bytes | Opcode = %d (%s)", (length, data[0], OPCODE_SENT[str(data[0])]))
+        logging.debug("SEND %d bytes | Opcode = %d (%s)", length, data[0], OPCODE_SENT[str(data[0])])
         data = struct.pack(format, length, *data)
         self.connection.send(data)
 
@@ -27,7 +29,7 @@ class SocketCommon():
             data = struct.unpack('<l', self.connection.recv(SIZE_LEN))[0]
         except socket.error, msg:
             data = None
-            # print socket.error, msg
+            #logging.exception("%s: %s", socket.error, str(msg))
         return data
 
     def read_opcode(self):
@@ -35,7 +37,7 @@ class SocketCommon():
             data = struct.unpack('<h', self.connection.recv(SIZE_OPCODE))[0]
         except socket.error, msg:
             data = None
-            # print socket.error, msg
+            #logging.exception("%s: %s", socket.error, str(msg))
         return data
 
     def read_data(self, length):
@@ -43,7 +45,7 @@ class SocketCommon():
             data = self.connection.recv(length-SIZE_OPCODE)
         except socket.error, msg:
             data = None
-            # print socket.error, msg
+            #logging.exception("%s: %s", socket.error, str(msg))
         return data
 
     def read(self):
@@ -52,7 +54,7 @@ class SocketCommon():
             opcode = self.read_opcode()
             raw_data = self.read_data(length)
             msg = Message(opcode, raw_data, self.config)
-            msg.print_msg("RECV %d bytes | Opcode = %d (%s)", (length, opcode, OPCODE_RECV[str(opcode)]))
+            logging.debug("RECV %d bytes | Opcode = %d (%s)", length, opcode, OPCODE_RECV[str(opcode)])
             if opcode is 48:
                 file_id = msg.decode()
                 self.send('<lhl', [OPCODE("GetFileInfo"), file_id])

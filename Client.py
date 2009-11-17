@@ -16,7 +16,6 @@ class Client(SocketCommon):
         self.config = config
 
     def connect(self):
-        print "* Connecting to mldonkey...",
         for res in socket.getaddrinfo(self.config.hostname, self.config.port, socket.AF_UNSPEC,
                                       socket.SOCK_STREAM):
             af, socktype, proto, canonname, sa = res
@@ -34,25 +33,25 @@ class Client(SocketCommon):
                 continue
             break
         if s is None:
-            print 'could not open socket: %d - %s' % (msg[0], msg[1])
-	    sys.exit(-1)
+            logging.error("Could not open socket with mldonkey server: %d - %s", (msg[0], msg[1]))
+            sys.exit(-1)
 
-        print "connected."
+        logging.info("Connected to mldonkey.")
 
         # Read mldonkey server protocol version
-        print "* Reading protocol version..."
+        logging.info("Reading protocol version...")
         self.read()	
 
         # Send Client Protocol Version
-        print "* Sending protocol version..."
+        logging.info("Sending protocol version...")
         self.send('<lhl', [OPCODE("ProtocolVersion"), GUI_PROTO_VERSION])
 
         # Send login and password
-        print "* Sending user and password..."
+        logging.info("Sending user and password...")
         self.send_login(self.config.username,self.config.password)
 
         # Set connection non-blocking
         self.connection.setblocking(0)
         
-	return s
+        return s
 

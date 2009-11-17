@@ -12,7 +12,7 @@ class Listener(SocketCommon):
     def __init__(self, name, connection, config):
         self.name = name
         self.connection = connection
-	self.config = config
+        self.config = config
 
     def start(self):
         while(1):

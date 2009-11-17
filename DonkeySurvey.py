@@ -4,14 +4,19 @@ import sys
 import getopt
 import thread
 import time
+import logging
 
 from Config import *
 from Client import *
 from Listener import *
 
 def main():
+    # Load config options from config file and command line args
     cfg = Config()
     cfg.load_options()
+
+    logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s DonkeySurvey %(levelname)s: %(message)s')
 
     # Start mldonkey Connection Phase without pool mode
     # Connect and start listener thread

@@ -3,6 +3,7 @@
 import getopt
 import sys
 import os
+import logging
 
 from ConfigParser import *
 
@@ -39,7 +40,7 @@ class Config():
            self.config.read(['/etc/donkeysurvey/donkeysurvey.conf', 
                              os.path.expanduser('~/.donkeysurveyrc')])
        except (MissingSectionHeaderError), err:
-           print "Error in config file syntax: %s" % str(err)
+           logging.exception("Error in config file syntax: %s", str(err))
            sys.exit(2)
  
        self.debug = self.read_option('general', 'debug')
@@ -55,7 +56,7 @@ class Config():
        try:
            opts, args = getopt.getopt(sys.argv[1:], short_options, long_options)
        except getopt.GetoptError, err:
-           print str(err)
+           logging.exception("Error parsing args: %s", str(err))
            self.usage()
            sys.exit(2)
 
