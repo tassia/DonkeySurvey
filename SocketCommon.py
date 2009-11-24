@@ -42,7 +42,7 @@ class SocketCommon():
 
     def read_data(self, length):
         try:
-            data = self.connection.recv(length-SIZE_OPCODE)
+            data = self.connection.recv(length)
         except socket.error, msg:
             data = None
             #logging.exception("%s: %s", socket.error, str(msg))
@@ -52,7 +52,7 @@ class SocketCommon():
         length = self.read_length()
         if length is not None:
             opcode = self.read_opcode()
-            raw_data = self.read_data(length)
+            raw_data = self.read_data(length-SIZE_OPCODE)
             msg = Message(opcode, raw_data, self.config)
             logging.debug("RECV %d bytes | Opcode = %d (%s)", length, opcode, OPCODE_RECV[str(opcode)])
             if opcode is 48:

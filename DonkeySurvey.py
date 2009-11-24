@@ -9,6 +9,7 @@ import logging
 from Config import *
 from Client import *
 from Listener import *
+from MessageHandler import *
 
 def main():
     # Load config options from config file and command line args
@@ -42,7 +43,9 @@ def main():
 
     # Start listener thread to receive server msgs 
     listener = Listener("Listener", mldonkey.connection, cfg)
-    thread.start_new_thread(listener.start, ())
+    handler = MessageHandler(listener)
+    #thread.start_new_thread(listener.start, ())
+    thread.start_new_thread(handler.start, ())
 
     while 1:time.sleep(0)
     #while 1:pass

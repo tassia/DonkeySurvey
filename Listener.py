@@ -15,7 +15,7 @@ class Listener(SocketCommon):
         self.connection = connection
         self.config = config
 
-    def start(self):
-        logging.info("Starting listener...")
-        while(1):
-            self.read()
+    #def start(self):
+    #    logging.info("Starting listener...")
+    #    while(1):
+    #        self.read()
