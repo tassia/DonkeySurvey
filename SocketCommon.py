@@ -53,14 +53,15 @@ class SocketCommon():
         if length is not None:
             opcode = self.read_opcode()
             raw_data = self.read_data(length-SIZE_OPCODE)
-            msg = Message(opcode, raw_data, self.config)
+            msg = Message(opcode, raw_data, self.config, length)
             logging.debug("RECV %d bytes | Opcode = %d (%s)", length, opcode, OPCODE_RECV[str(opcode)])
-            if opcode is 48:
-                file_id = msg.decode()
-                self.send('<lhl', [OPCODE("GetFileInfo"), file_id])
-            else:
-                msg.decode()
-            return length
+            return msg
+            #if opcode is 48:
+            #    file_id = msg.decode()
+            #    self.send('<lhl', [OPCODE("GetFileInfo"), file_id])
+            #else:
+            #    msg.decode()
+            #return length
         else:
             return None
 

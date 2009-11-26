@@ -8,14 +8,15 @@ import logging
 sys.path.append('../database')
 sys.path.append('../database/entities')
 
-from FileDAO import FileDAO
 from File import File
 
 class Message():
-    def __init__(self, opcode, raw_data, config):
+
+    def __init__(self, opcode, raw_data, config, length):
         self.opcode = opcode
         self.raw_data = raw_data
         self.config = config
+        self.length = length
 
     def decode_string(self,data, offset):
         str_len = struct.unpack_from('<h', data, offset)
@@ -30,26 +31,6 @@ class Message():
     def decode_char(self, len, data, offset):
         format = "<%dc" % (len)
         return struct.unpack_from(format, data, offset)[0]
-
-    def decode(self):
-        if self.opcode is 9:
-            self.decode_msg_9(self.raw_data)
-        elif self.opcode is 10:
-            self.decode_msg_10(self.raw_data)
-        elif self.opcode is 15:
-            self.decode_msg_15(self.raw_data)
-        elif self.opcode is 16:
-            self.decode_msg_16(self.raw_data)
-        elif self.opcode is 20:
-            self.decode_msg_20(self.raw_data)
-        elif self.opcode is 46:
-            self.decode_msg_46(self.raw_data)
-        elif self.opcode is 48:
-            return self.decode_msg_48(self.raw_data)
-        elif self.opcode is 50:
-            self.decode_msg_50(self.raw_data)
-        elif self.opcode is 52:
-            self.decode_msg_52(self.raw_data)
     
     # FileUpdateAvailability
     def decode_msg_9(self, raw_data):
@@ -279,10 +260,9 @@ class Message():
         file_age = self.decode_int("l", raw_data, offset)
 	offset += 4
         logging.debug("FileID: %d | FileMD4 %s | FileSize: %d | DownloadState: %d", file_id, str.upper(binascii.hexlify("".join(file_md4))), file_size, file_state)
-        fdao = FileDAO()
 	file = File()
 	file.hash = str.upper(binascii.hexlify("".join(file_md4)))
 	file.size = file_size
 	file.bestName = file_name2
-	fdao.insert(file)
+        return file
 
