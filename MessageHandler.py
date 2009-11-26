@@ -47,7 +47,7 @@ class MessageHandler:
         elif self.msg.opcode is 52:
             file = self.msg.decode_msg_52(self.msg.raw_data)
             fdao = FileDAO()
-	    fdao.insert(file)
+	    fdao.insertOrUpdate(file)
 
 
                

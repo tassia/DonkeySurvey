@@ -263,6 +263,7 @@ class Message():
 	file = File()
 	file.hash = str.upper(binascii.hexlify("".join(file_md4)))
 	file.size = file_size
+        file.partialSize = downloaded
 	file.bestName = file_name2
         return file
 
