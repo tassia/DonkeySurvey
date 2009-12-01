@@ -47,8 +47,8 @@ def main():
     #thread.start_new_thread(listener.start, ())
     thread.start_new_thread(handler.start, ())
 
-    while 1:time.sleep(0)
-    #while 1:pass
+    #while 1:time.sleep(0)
+    while 1:pass
 
 if __name__ == "__main__":
     main()
