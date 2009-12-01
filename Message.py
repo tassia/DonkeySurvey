@@ -202,6 +202,8 @@ class Message():
 
     # FileInfo
     def decode_msg_52(self, raw_data):
+	file = File()
+
         file_id = self.decode_int("l", raw_data, 0) 
         net_id = self.decode_int("l", raw_data, 4)
         pfile_names_len = self.decode_int("h", raw_data, 8)
@@ -213,6 +215,7 @@ class Message():
 	    file_name2 = file_name
 	    offset += 2 + file_name_len
 	    logging.debug("--- PossibleFileName: %s", file_name)
+            file.filenames[i] = file_name
         file_md4 = struct.unpack_from("<16c", raw_data, offset)
 	offset += 16
         file_size = self.decode_int("L", raw_data, offset)
@@ -260,7 +263,6 @@ class Message():
         file_age = self.decode_int("l", raw_data, offset)
 	offset += 4
         logging.debug("FileID: %d | FileMD4 %s | FileSize: %d | DownloadState: %d", file_id, str.upper(binascii.hexlify("".join(file_md4))), file_size, file_state)
-	file = File()
 	file.hash = str.upper(binascii.hexlify("".join(file_md4)))
 	file.size = file_size
         file.partialSize = downloaded
