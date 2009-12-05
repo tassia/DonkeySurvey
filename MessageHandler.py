@@ -62,7 +62,4 @@ class MessageHandler:
                 filenameId = fnamedao.insertOrUpdate(filename)
                 fhasfnamedao.insertOrUpdate(fileId, filenameId); 
 
-            #TODO check OPCODE
-            #TODO create entity
-            #TODO store in database through DAO
     
