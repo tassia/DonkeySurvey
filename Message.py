@@ -173,7 +173,7 @@ class Message():
             logging.debug("--- NetworkFlag: %d", tag)
 
     # GuiUserInfo
-    def decode_msg_21(self. raw_data):
+    def decode_msg_21(self, raw_data):
         user_id = self.decode_int("l", raw_data, 0)
         offset = 4
         user_md4 = struct.unpack_from("<16c", raw_data, offset)
@@ -335,7 +335,7 @@ class Message():
             offset += 4
             mp3_genre = self.decode_int("l", raw_data, offset)
             offset += 4
-            logging.debug("--- Mp3Title: %s | Mp3Artist: %s | Mp3Artist: %s | Mp3Album: %s | Mp3Year: %s | Mp3Comment: %s | Mp3Track: %d | Mp3Genre: %d ", mp3_title, mp3_artist, mp3_album, mp3_year, mp3_comment, mp3_track, mp3_genre)
+            logging.debug("--- Mp3Title: %s | Mp3Artist: %s |  Mp3Album: %s | Mp3Year: %s | Mp3Comment: %s | Mp3Track: %d | Mp3Genre: %d ", mp3_title, mp3_artist, mp3_album, mp3_year, mp3_comment, mp3_track, mp3_genre)
         if file_format is 4:
             list_len = self.decode_int("h", raw_data, offset)
             offset += 2
