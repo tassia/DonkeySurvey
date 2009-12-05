@@ -49,7 +49,7 @@ class Message():
     
     # ClientInfo
     def decode_msg_15(self, raw_data):
-        session = Session()
+        #session = Session()
         client_id = self.decode_int("l", raw_data, 0)
         client_netid = self.decode_int("l", raw_data, 4)
         client_type = self.decode_int("b", raw_data, 8)
@@ -60,7 +60,7 @@ class Message():
             client_name = self.decode_string(raw_data, offset)
             client_hash = struct.unpack_from("<17s", raw_data, 11 + client_name_len)
             logging.debug("--- ClientName: %s (%d) | ClientHash: %s", client_name, client_name_len, str.upper(binascii.hexlify("".join(client_hash))))
-            session.clientName = client_name
+            #session.clientName = client_name
             offset = 28 + client_name_len;
         ip0 = self.decode_int("B", raw_data, offset)
         ip1 = self.decode_int("B", raw_data, offset+1)
@@ -69,7 +69,8 @@ class Message():
         geoip = self.decode_int("B", raw_data, offset + 4)
         port = self.decode_int("H", raw_data, offset + 5)
         logging.debug("--- IP: %d.%d.%d.%d | geoip: %d | Port: %d ", ip0, ip1, ip2, ip3, geoip, port)
-        session.clientIP = ip0+"."+ip1+"."+ip2+"."+ip3+"."+ip4 
+        #session.clientIP = ip0+"."+ip1+"."+ip2+"."+ip3+"."+ip4
+        #session.clientPort 
         offset += 7
         connection_state = self.decode_int("B", raw_data, offset)
         offset += 1
