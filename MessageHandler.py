@@ -40,6 +40,8 @@ class MessageHandler:
             self.msg.decode_msg_16(self.msg.raw_data)
         elif self.msg.opcode is 20:
             self.msg.decode_msg_20(self.msg.raw_data)
+        elif self.msg.opcode is 21:
+            self.msg.decode_msg_21(self.msg.raw_data)
         elif self.msg.opcode is 46:
             self.msg.decode_msg_46(self.msg.raw_data)
         elif self.msg.opcode is 48:
