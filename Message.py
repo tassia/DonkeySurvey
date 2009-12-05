@@ -45,6 +45,7 @@ class Message():
         file_id = self.decode_int("l", raw_data, 0)
         source_id = self.decode_int("l", raw_data, 4)
         logging.debug("FileID: %d | SourceIdentifier: %d ",file_id, source_id)
+        return source_id
     
     # ClientInfo
     def decode_msg_15(self, raw_data):

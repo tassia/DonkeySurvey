@@ -33,7 +33,8 @@ class MessageHandler:
         if self.msg.opcode is 9:
            self.msg.decode_msg_9(self.msg.raw_data)
         elif self.msg.opcode is 10:
-            self.msg.decode_msg_10(self.msg.raw_data)
+            source_id = self.msg.decode_msg_10(self.msg.raw_data)
+            self.listener.send('<lhl', [OPCODE("GetUserInfo"), source_id])
         elif self.msg.opcode is 15:
             self.msg.decode_msg_15(self.msg.raw_data)
         elif self.msg.opcode is 16:
