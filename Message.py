@@ -244,7 +244,6 @@ class Message():
         for i in range(pfile_names_len):
 	    file_name_len = self.decode_int("h", raw_data, offset)
 	    file_name = self.decode_string(raw_data, offset)
-	    file_name2 = file_name
 	    offset += 2 + file_name_len
 	    logging.debug("--- PossibleFileName: %s", file_name)
             file.filenames[i] = file_name
@@ -401,9 +400,34 @@ class Message():
                         format_float = "<%dc" % float_len
                         list2 = struct.unpack_from(format_float, raw_data, offset)
                         offset += float_len
-
-                    
-            
+                    tags[13] = self.decode_int("h", raw_data, offset)
+                    offset += 4
+                    tags[14] = self.decode_int("h", raw_data, offset)
+                    offset += 4
+                    float_len = self.decode_int("h", raw_data, offset)
+                    offset += 2
+                    format_float = "<%dc" % float_len
+                    tags[15] = struct.unpack_from(format_float, raw_data, offset)
+                    offset += float_len
+		    float_len = self.decode_int("h", raw_data, offset)
+                    offset += 2
+                    format_float = "<%dc" % float_len
+                    tags[16] = struct.unpack_from(format_float, raw_data, offset)
+                    offset += float_len
+                    float_len = self.decode_int("h", raw_data, offset)
+                    offset += 2
+                    format_float = "<%dc" % float_len
+                    tags[17] = struct.unpack_from(format_float, raw_data, offset)
+                    offset += float_len
+                    float_len = self.decode_int("h", raw_data, offset)
+                    offset += 2
+                    format_float = "<%dc" % float_len
+                    tags[18] = struct.unpack_from(format_float, raw_data, offset)
+                    offset += float_len
+                    tags[19] = self.decode_int("b", raw_data, offset)
+                    offset += 1
+                    tags[20] = self.decode_int("l", raw_data, offset)
+                    offset += 4
         file_pref_name_len = self.decode_int("h", raw_data, offset)
         file_pref_name = self.decode_string(raw_data,offset)
         offset += 2 + file_pref_name_len
@@ -411,6 +435,6 @@ class Message():
 	file.hash = str.upper(binascii.hexlify("".join(file_md4)))
 	file.size = file_size
         file.partialSize = downloaded
-	file.bestName = file_name2
+	file.bestName = file_pref_name
         return file
 

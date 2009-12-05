@@ -34,7 +34,7 @@ class MessageHandler:
            self.msg.decode_msg_9(self.msg.raw_data)
         elif self.msg.opcode is 10:
             source_id = self.msg.decode_msg_10(self.msg.raw_data)
-            self.listener.send('<lhl', [OPCODE("GetUserInfo"), source_id])
+            self.listener.send('<lhl', [OPCODE("GetClientInfo"), source_id])
         elif self.msg.opcode is 15:
             self.msg.decode_msg_15(self.msg.raw_data)
         elif self.msg.opcode is 16:
@@ -54,12 +54,16 @@ class MessageHandler:
             file = self.msg.decode_msg_52(self.msg.raw_data)
             fdao = FileDAO()
 	    fileId = fdao.insertOrUpdate(file)
+            if fileId is None:
+	        logging.debug("FileId is null")
             fnamedao = FilenameDAO() 
             fhasfnamedao = FileHasFilenameDAO()
             for k,v in file.filenames.iteritems():
                 filename = Filename()
                 filename.name = v
                 filenameId = fnamedao.insertOrUpdate(filename)
+                if filenameId is None:
+                    logging.debug("Filename is null")
                 fhasfnamedao.insertOrUpdate(fileId, filenameId); 
 
     
