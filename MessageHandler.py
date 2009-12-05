@@ -14,6 +14,7 @@ sys.path.append('../database/entities')
 from FileDAO import FileDAO
 from File import File
 from FilenameDAO import FilenameDAO
+from FileHasFilenameDAO import FileHasFilenameDAO
 from Filename import Filename
 
 class MessageHandler:
@@ -48,17 +49,15 @@ class MessageHandler:
             self.msg.decode_msg_50(self.msg.raw_data)
         elif self.msg.opcode is 52:
             file = self.msg.decode_msg_52(self.msg.raw_data)
+            fdao = FileDAO()
+	    fileId = fdao.insertOrUpdate(file)
             fnamedao = FilenameDAO() 
+            fhasfnamedao = FileHasFilenameDAO()
             for k,v in file.filenames.iteritems():
                 filename = Filename()
                 filename.name = v
-                fnamedao.insertOrUpdate(filename)
-            fdao = FileDAO()
-	    fdao.insertOrUpdate(file)
-
-
-               
-
+                filenameId = fnamedao.insertOrUpdate(filename)
+                fhasfnamedao.insertOrUpdate(fileId, filenameId); 
 
             #TODO check OPCODE
             #TODO create entity
