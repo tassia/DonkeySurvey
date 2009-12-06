@@ -22,6 +22,12 @@ class SocketCommon():
         logging.debug("SEND %d bytes | Opcode = %d (%s)", length, data[0], OPCODE_SENT[str(data[0])])
         data = struct.pack(format, length, *data)
         self.connection.send(data)
+ 
+    def send_cmd(self, cmd):
+        cmd_l=len(cmd)
+        format = "<l h h %ds" % (cmd_l)
+        logging.debug("SENDING ConsoleCommand")
+        self.send(format, [OPCODE("ConsoleCommand"), cmd_l, cmd])
 
     def read_length(self):
         # TODO: Fix-me when password is invalid

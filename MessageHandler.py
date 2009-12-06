@@ -36,19 +36,26 @@ class MessageHandler:
         elif self.msg.opcode is 9:
            self.msg.decode_msg_9(self.msg.raw_data)
         elif self.msg.opcode is 10:
-            source_id = self.msg.decode_msg_10(self.msg.raw_data)
+            file_id, source_id = self.msg.decode_msg_10(self.msg.raw_data)
             logging.debug("Source ID: %d" , source_id)
         elif self.msg.opcode is 15:
             session = self.msg.decode_msg_15(self.msg.raw_data)
+            #cmd = "vc %d" % (client_id)
+            #self.listener.send_cmd(cmd)
             if session:
                 sdao = SessionDAO()
                 sessionId = sdao.insert(session)
         elif self.msg.opcode is 16:
             self.msg.decode_msg_16(self.msg.raw_data)
+        elif self.msg.opcode is 19:
+            self.msg.decode_msg_19(self.msg.raw_data)
         elif self.msg.opcode is 20:
             self.msg.decode_msg_20(self.msg.raw_data)
         elif self.msg.opcode is 21:
             self.msg.decode_msg_21(self.msg.raw_data)
+        elif self.msg.opcode is 26:
+            server_id = self.msg.decode_msg_26(self.msg.raw_data)
+            self.listener.send('<lhl', [32, server_id])
         elif self.msg.opcode is 46:
             self.msg.decode_msg_46(self.msg.raw_data)
         elif self.msg.opcode is 48:

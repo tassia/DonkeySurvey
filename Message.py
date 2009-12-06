@@ -4,6 +4,7 @@ import struct
 import binascii
 import sys
 import logging
+import re
 
 sys.path.append('../database')
 sys.path.append('../database/entities')
@@ -45,7 +46,7 @@ class Message():
             option2_len = self.decode_int("h", raw_data, offset)
             option2 = self.decode_string(raw_data, offset)
             offset += 2 + option2_len
-            logging.debug("Option: %s | Value: %s", option, option2)
+            #logging.debug("Option: %s | Value: %s", option, option2)
  
     # FileUpdateAvailability
     def decode_msg_9(self, raw_data):
@@ -60,7 +61,7 @@ class Message():
         file_id = self.decode_int("l", raw_data, 0)
         source_id = self.decode_int("l", raw_data, 4)
         logging.debug("FileID: %d | SourceIdentifier: %d ",file_id, source_id)
-        return source_id
+        return (file_id, source_id)
     
     # ClientInfo
     def decode_msg_15(self, raw_data):
@@ -153,7 +154,6 @@ class Message():
         logging.debug("--- SuiVerified: %d", sui_verified)
 	if downloaded is not 0 or uploaded is not 0:
 	    logging.debug("ClientID: %d | ClientName: %s | ClientIP: %d.%d.%d.%d | ClientPort: %d | ClientSoftware: %s | ConnectionState: %d | FileName: %s | Down: %d | Up: %d ", client_id, client_name, ip0, ip1, ip2, ip3, port, client_software, connection_state, upload_filename, downloaded, uploaded)
-
         session.ip = "%d.%d.%d.%d" % (ip0, ip1, ip2, ip3)
         session.port = port 
         #session.clientSoftware = client_software
@@ -173,10 +173,21 @@ class Message():
     def decode_msg_16(self, raw_data):
         client_id = self.decode_int("l", raw_data, 0) 
         connection_state = self.decode_int("b", raw_data, 4) 
-        logging.debug("ClientID: %d | ConnectionState: %d ", client_id, connection_state)
+        #logging.debug("ClientID: %d | ConnectionState: %d ", client_id, connection_state)
         if str(connection_state) in ("3", "5", "9"):
             rank = self.decode_int("l", raw_data, 5) 
             logging.debug("--- Rank: %d ", rank)
+
+    # ConsoleMessage
+    def decode_msg_19(self, raw_data):
+        msg = self.decode_string(raw_data,0)
+        m = re.compile("MD4: [A-Z0-9]{32}")
+        if m.search(msg):
+            logging.debug("%s", m.search(msg).group(0))
+        m = re.compile("Client: [0-9]")
+        if m.search(msg):
+            logging.debug("%s", m.search(msg).group(0))
+        logging.debug("ConsoleMessage: %s", msg)
 
     # NetworkInfo
     def decode_msg_20(self, raw_data):
@@ -194,15 +205,15 @@ class Message():
         offset += 8
         connected_servers = self.decode_int("l", raw_data, offset)
         offset += 4
-        logging.debug("NetworkID: %d | NetworkName: %s | Enable: %d | NetworkConfigFile: %s | Down: %d | Up: %d | ConnServers: %d ", 
-                      network_id, network_name, enable, network_config_file, bytes_downloaded, bytes_uploaded, connected_servers)
+        #logging.debug("NetworkID: %d | NetworkName: %s | Enable: %d | NetworkConfigFile: %s | Down: %d | Up: %d | ConnServers: %d ", 
+                      #network_id, network_name, enable, network_config_file, bytes_downloaded, bytes_uploaded, connected_servers)
         tags_len = self.decode_int("h", raw_data, offset)
         offset += 2
-        logging.debug("--- NetworkFlags: %d", tags_len)
+        #logging.debug("--- NetworkFlags: %d", tags_len)
         for i in range(tags_len):
             tag = self.decode_int("h", raw_data, offset)
             offset += 2
-            logging.debug("--- NetworkFlag: %d", tag)
+            #logging.debug("--- NetworkFlag: %d", tag)
 
     # GuiUserInfo
     def decode_msg_21(self, raw_data):
@@ -230,7 +241,13 @@ class Message():
         blocked = self.decode_int("b", raw_data, offset)
         offset += 1
         logging.debug("--- Blocked: %d ", blocked)
-        
+      
+    # ServerInfo (Partial)
+    def decode_msg_26(self, raw_data):
+        server_id = self.decode_int("h", raw_data, 0)
+        #logging.debug("ServerID: %d ", server_id)
+        return server_id
+ 
     # FileDownloadUpdate
     def decode_msg_46(self, raw_data):
         file_id = self.decode_int("l", raw_data, 0) 
@@ -238,7 +255,7 @@ class Message():
         rate_len = self.decode_int("h", raw_data, 12)
         download_rate = self.decode_string(raw_data, 12)
         last_seen = self.decode_int("l", raw_data, 14 + rate_len)
-        logging.debug("FileID: %d | Downloaded: %d | Download_rate: %s | Seconds since last seen: %d ", file_id, downloaded_size, download_rate, last_seen)
+        #logging.debug("FileID: %d | Downloaded: %d | Download_rate: %s | Seconds since last seen: %d ", file_id, downloaded_size, download_rate, last_seen)
 
     # SharedFileInfo
     def decode_msg_48(self, raw_data):
@@ -249,7 +266,7 @@ class Message():
         file_size = self.decode_int("q", raw_data, 10 + file_len) 
         uploaded = self.decode_int("q", raw_data, 18 + file_len) 
         requests = self.decode_int("l", raw_data, 26 + file_len) 
-        logging.debug("FileID: %d | NetworkID: %d | FileName: %s | FileSize: %d | Uploaded: %d | Requests: %d ", file_id, netid, file, file_size, uploaded, requests)
+        #logging.debug("FileID: %d | NetworkID: %d | FileName: %s | FileSize: %d | Uploaded: %d | Requests: %d ", file_id, netid, file, file_size, uploaded, requests)
         return file_id
 
     # FileRemoveSource
