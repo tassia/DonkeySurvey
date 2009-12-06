@@ -154,19 +154,19 @@ class Message():
 	if downloaded is not 0 or uploaded is not 0:
 	    logging.debug("ClientID: %d | ClientName: %s | ClientIP: %d.%d.%d.%d | ClientPort: %d | ClientSoftware: %s | ConnectionState: %d | FileName: %s | Down: %d | Up: %d ", client_id, client_name, ip0, ip1, ip2, ip3, port, client_software, connection_state, upload_filename, downloaded, uploaded)
 
-        session.clientIP = "%d.%d.%d.%d" % (ip0, ip1, ip2, ip3)
-        session.clientPort = port 
-        session.clientSoftware = client_software
-        if client_name:        
-            session.clientName = client_name
+        session.ip = "%d.%d.%d.%d" % (ip0, ip1, ip2, ip3)
+        session.port = port 
+        #session.clientSoftware = client_software
+        #if client_name:        
+        #    session.name = client_name
         if downloaded is not 0:
-            session.totalTransferred = downloaded
+            session.downloaded = downloaded
         else:
-            session.totalTransferred = uploaded
+            session.uploaded = uploaded
         session.startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        session.endDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        session.ed2kuser = 0
-        session.file = 0
+        session.lastUpdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        session.source.id = 0
+        session.file.id = 0
     	return session
 
     # ClientState
