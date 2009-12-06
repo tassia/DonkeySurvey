@@ -9,6 +9,8 @@ sys.path.append('../database')
 sys.path.append('../database/entities')
 
 from File import File
+from Session import Session
+from datetime import datetime, date, time
 
 class Message():
 
@@ -62,7 +64,8 @@ class Message():
     
     # ClientInfo
     def decode_msg_15(self, raw_data):
-        #session = Session()
+        session = Session()
+
         client_id = self.decode_int("l", raw_data, 0)
         client_netid = self.decode_int("l", raw_data, 4)
         client_type = self.decode_int("b", raw_data, 8)
@@ -73,7 +76,6 @@ class Message():
             client_name = self.decode_string(raw_data, offset)
             client_hash = struct.unpack_from("<17s", raw_data, 11 + client_name_len)
             logging.debug("--- ClientName: %s (%d) | ClientHash: %s", client_name, client_name_len, str.upper(binascii.hexlify("".join(client_hash))))
-            #session.clientName = client_name
             offset = 28 + client_name_len;
         ip0 = self.decode_int("B", raw_data, offset)
         ip1 = self.decode_int("B", raw_data, offset+1)
@@ -82,8 +84,6 @@ class Message():
         geoip = self.decode_int("B", raw_data, offset + 4)
         port = self.decode_int("H", raw_data, offset + 5)
         logging.debug("--- IP: %d.%d.%d.%d | geoip: %d | Port: %d ", ip0, ip1, ip2, ip3, geoip, port)
-        #session.clientIP = ip0+"."+ip1+"."+ip2+"."+ip3+"."+ip4
-        #session.clientPort 
         offset += 7
         connection_state = self.decode_int("B", raw_data, offset)
         offset += 1
@@ -153,6 +153,21 @@ class Message():
         logging.debug("--- SuiVerified: %d", sui_verified)
 	if downloaded is not 0 or uploaded is not 0:
 	    logging.debug("ClientID: %d | ClientName: %s | ClientIP: %d.%d.%d.%d | ClientPort: %d | ClientSoftware: %s | ConnectionState: %d | FileName: %s | Down: %d | Up: %d ", client_id, client_name, ip0, ip1, ip2, ip3, port, client_software, connection_state, upload_filename, downloaded, uploaded)
+
+        session.clientIP = "%d.%d.%d.%d" % (ip0, ip1, ip2, ip3)
+        session.clientPort = port 
+        session.clientSoftware = client_software
+        if client_name:        
+            session.clientName = client_name
+        if downloaded is not 0:
+            session.totalTransferred = downloaded
+        else:
+            session.totalTransferred = uploaded
+        session.startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        session.endDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        session.ed2kuser = 0
+        session.file = 0
+    	return session
 
     # ClientState
     def decode_msg_16(self, raw_data):
@@ -235,8 +250,6 @@ class Message():
         uploaded = self.decode_int("q", raw_data, 18 + file_len) 
         requests = self.decode_int("l", raw_data, 26 + file_len) 
         logging.debug("FileID: %d | NetworkID: %d | FileName: %s | FileSize: %d | Uploaded: %d | Requests: %d ", file_id, netid, file, file_size, uploaded, requests)
-        # TODO
-        # self.send('<lhl', [OPCODE("GetFileInfo"), file_id])
         return file_id
 
     # FileRemoveSource

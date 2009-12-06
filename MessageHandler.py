@@ -15,6 +15,7 @@ from FileDAO import FileDAO
 from File import File
 from FilenameDAO import FilenameDAO
 from FileHasFilenameDAO import FileHasFilenameDAO
+from SessionDAO import SessionDAO
 from Filename import Filename
 
 class MessageHandler:
@@ -36,9 +37,12 @@ class MessageHandler:
            self.msg.decode_msg_9(self.msg.raw_data)
         elif self.msg.opcode is 10:
             source_id = self.msg.decode_msg_10(self.msg.raw_data)
-            self.listener.send('<lhl', [OPCODE("GetClientInfo"), source_id])
+            logging.debug("Source ID: %d" , source_id)
         elif self.msg.opcode is 15:
-            self.msg.decode_msg_15(self.msg.raw_data)
+            session = self.msg.decode_msg_15(self.msg.raw_data)
+            if session:
+                sdao = SessionDAO()
+                sessionId = sdao.insert(session)
         elif self.msg.opcode is 16:
             self.msg.decode_msg_16(self.msg.raw_data)
         elif self.msg.opcode is 20:
