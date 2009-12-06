@@ -16,16 +16,24 @@ class Config():
        self.username = "admin"
        self.password = ""
        self.config = None
+       self.dbhost = "127.0.0.1"
+       self.dbname = "donkeysurvey"
+       self.dbuser = "donkeysurvey"
+       self.dbpass = "donkeysurvey"
 
    def usage(self):
        print "Syntax error"
-       print "  -h, --help         This help"
-       print "  -d, --debug        Set debug to true. Default is false."
-       print "  -o, --output=FILE  Dump all output in FILE. (Default is Stdout)"
-       print "  -H, --host=HOST    Host name to connect. (Default is 127.0.0.1)"
-       print "  -p, --port=PORT    Port to connect. (Default is 4001)"
-       print "  -U, --user=USER    User for authentication. (Default is admin)"
-       print "  -P, --pass=PASS    Password for authentication. (Default is empty)"
+       print "  -h, --help           This help"
+       print "  -d, --debug          Set debug to true. Default is false."
+       print "  -o, --output=FILE    Dump all output in FILE. (Default is Stdout)"
+       print "  -H, --host=HOST      Host name to connect. (Default is 127.0.0.1)"
+       print "  -p, --port=PORT      Port to connect. (Default is 4001)"
+       print "  -U, --user=USER      User for authentication. (Default is admin)"
+       print "  -P, --pass=PASS      Password for authentication. (Default is empty)"
+       print "  -D, --dbhost=HOST    Host name for database connection. (Default is 127.0.0.1)"
+       print "  -N, --dbname=DBNAME  Database name for store data. (Default is donkeysurvey)"
+       print "  -u, --dbuser=DBUSER  Database username for store data. (Default is donkeysurvey)"
+       print "  -w, --dbpass=DBPASS  Database password for store data. (Default is donkeysurvey)"
 
    def read_option(self, section, option):
        var = "self.%s" % option
@@ -49,10 +57,14 @@ class Config():
        self.port = self.read_option('mldonkey', 'port')
        self.username = self.read_option('mldonkey', 'username')
        self.password = self.read_option('mldonkey', 'password')
+       self.dbhost = self.read_option('database', 'dbhost')
+       self.dbname = self.read_option('database', 'dbname')
+       self.dbuser = self.read_option('database', 'dbuser')
+       self.dbpass = self.read_option('database', 'dbpass')
 
-       short_options = "hdo:H:p:U:P:"
+       short_options = "hdo:H:p:U:P:D:N:u:w:"
        long_options = ["help", "debug", "output=", "host=", 
-                       "port=", "user=", "pass="]
+                       "port=", "user=", "pass=", "dbhost=", "dbname=", "dbuser=", "dbpass="]
        try:
            opts, args = getopt.getopt(sys.argv[1:], short_options, long_options)
        except getopt.GetoptError, err:
