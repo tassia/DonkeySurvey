@@ -181,12 +181,23 @@ class Message():
     # ConsoleMessage
     def decode_msg_19(self, raw_data):
         msg = self.decode_string(raw_data,0)
-        m = re.compile("MD4: [A-Z0-9]{32}")
+        m = re.compile("Eval command: (.*) (.*)")
         if m.search(msg):
-            logging.debug("%s", m.search(msg).group(0))
-        m = re.compile("Client: [0-9]")
-        if m.search(msg):
-            logging.debug("%s", m.search(msg).group(0))
+            cmd = m.search(msg).group(1)
+            arg = m.search(msg).group(2)
+            sources = re.split("sources:\n", msg)[1]
+            m = re.compile("^  \[(.*\)]")
+            sources2 = m.findall(sources)
+            if m.findall(sources):
+                for i in sources2:
+                    logging.debug("%s", i)
+
+        #m = re.compile("MD4: [A-Z0-9]{32}")
+        #if m.search(msg):
+        #    logging.debug("%s", m.search(msg).group(0))
+        #m = re.compile("Client: [0-9]")
+        #if m.search(msg):
+        #    logging.debug("%s", m.search(msg).group(0))
         logging.debug("ConsoleMessage: %s", msg)
 
     # NetworkInfo
@@ -333,7 +344,7 @@ class Message():
 	for i in range(chunks_ages_len):
 	    chunk_age = self.decode_int("l", raw_data, offset)
 	    offset += 4
-	    logging.debug("--- ChunkAge: %d", chunk_age)
+	    #logging.debug("--- ChunkAge: %d", chunk_age)
         file_age = self.decode_int("l", raw_data, offset)
 	offset += 4
         logging.debug("--- FileID: %d | FileMD4 %s | FileSize: %d | DownloadState: %d", file_id, str.upper(binascii.hexlify("".join(file_md4))), file_size, file_state)
@@ -479,5 +490,5 @@ class Message():
 	file.size = file_size
         file.partialSize = downloaded
 	file.bestName = file_pref_name
-        return file
+        return file, file_id
 

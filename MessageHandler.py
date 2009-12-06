@@ -19,6 +19,7 @@ from SessionDAO import SessionDAO
 from Filename import Filename
 
 class MessageHandler:
+    file_sources = dict()
 
     def __init__(self, listener):
         self.listener = listener
@@ -64,7 +65,7 @@ class MessageHandler:
         elif self.msg.opcode is 50:
             self.msg.decode_msg_50(self.msg.raw_data)
         elif self.msg.opcode is 52:
-            file = self.msg.decode_msg_52(self.msg.raw_data)
+            file, file_id = self.msg.decode_msg_52(self.msg.raw_data)
             fdao = FileDAO()
 	    fileId = fdao.insertOrUpdate(file)
             if fileId is None:
@@ -78,5 +79,6 @@ class MessageHandler:
                 if filenameId is None:
                     logging.debug("Filename is null")
                 fhasfnamedao.insertOrUpdate(fileId, filenameId); 
-
-    
+            cmd = "vd %d" % (file_id) 
+            self.listener.send_cmd(cmd)
+   
