@@ -31,7 +31,20 @@ class Message():
     def decode_char(self, len, data, offset):
         format = "<%dc" % (len)
         return struct.unpack_from(format, data, offset)[0]
-    
+   
+    # GuiOptionsInfo 
+    def decode_msg_1(self, raw_data):
+        list_len = self.decode_int("h", raw_data, 0)
+        offset = 2
+        for i in range(list_len):
+            option_len = self.decode_int("h", raw_data, offset)
+            option = self.decode_string(raw_data, offset)
+            offset += 2 + option_len
+            option2_len = self.decode_int("h", raw_data, offset)
+            option2 = self.decode_string(raw_data, offset)
+            offset += 2 + option2_len
+            logging.debug("Option: %s | Value: %s", option, option2)
+ 
     # FileUpdateAvailability
     def decode_msg_9(self, raw_data):
         file_number = self.decode_int("l", raw_data, 0) 

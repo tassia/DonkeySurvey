@@ -30,7 +30,9 @@ class MessageHandler:
                 self.decode()
 
     def decode(self):
-        if self.msg.opcode is 9:
+        if self.msg.opcode is 1:
+           self.msg.decode_msg_1(self.msg.raw_data)
+        elif self.msg.opcode is 9:
            self.msg.decode_msg_9(self.msg.raw_data)
         elif self.msg.opcode is 10:
             source_id = self.msg.decode_msg_10(self.msg.raw_data)
