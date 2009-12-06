@@ -9,8 +9,8 @@ from GUIProtoDefinitions import *
 from Message import Message
 from SocketCommon import SocketCommon
 
-sys.path.append('../database')
-sys.path.append('../database/entities')
+sys.path.append('./database')
+sys.path.append('./database/entities')
 from FileDAO import FileDAO
 from File import File
 from FilenameDAO import FilenameDAO

@@ -6,8 +6,8 @@ import sys
 import logging
 import re
 
-sys.path.append('../database')
-sys.path.append('../database/entities')
+sys.path.append('./database')
+sys.path.append('./database/entities')
 
 from File import File
 from Session import Session
@@ -154,19 +154,16 @@ class Message():
         logging.debug("--- SuiVerified: %d", sui_verified)
 	if downloaded is not 0 or uploaded is not 0:
 	    logging.debug("ClientID: %d | ClientName: %s | ClientIP: %d.%d.%d.%d | ClientPort: %d | ClientSoftware: %s | ConnectionState: %d | FileName: %s | Down: %d | Up: %d ", client_id, client_name, ip0, ip1, ip2, ip3, port, client_software, connection_state, upload_filename, downloaded, uploaded)
-        session.ip = "%d.%d.%d.%d" % (ip0, ip1, ip2, ip3)
-        session.port = port 
-        #session.clientSoftware = client_software
-        #if client_name:        
-        #    session.name = client_name
-        if downloaded is not 0:
-            session.downloaded = downloaded
-        else:
-            session.uploaded = uploaded
+        #TODO create address object
+        session.address.ip = "%d.%d.%d.%d" % (ip0, ip1, ip2, ip3)
+        session.address.port = port 
+        session.downloaded = downloaded
+        session.uploaded = uploaded
         session.startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         session.lastUpdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         session.source.id = 0
         session.file.id = 0
+        session.address.id = 0
     	return session
 
     # ClientState
