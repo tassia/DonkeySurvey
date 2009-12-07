@@ -188,7 +188,9 @@ class Message():
                 m = re.compile("^  \[( +?\d+)\]", re.M)
                 result =  m.findall(sources)
                 b = [int(x) for x in result]
+                logging.debug(b)
                 return cmd, arg, b
+        return None, None, None
 
     # NetworkInfo
     def decode_msg_20(self, raw_data):
