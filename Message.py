@@ -188,11 +188,14 @@ class Message():
             cmd = m.search(msg).group(1)
             arg = m.search(msg).group(2)
             if (cmd == "vd"):
-                sources = re.split("sources:\n", msg)[1]
-                m = re.compile("^  \[( +?\d+)\]", re.M)
-                result =  m.findall(sources)
-                b = [int(x) for x in result]
-                logging.debug(b)
+                try:
+                    sources = re.split("sources:\n", msg)[1]
+                    m = re.compile("^  \[( +?\d+)\]", re.M)
+                    result =  m.findall(sources)
+                    b = [int(x) for x in result]
+                    logging.debug(b)
+                except Exception, err:
+                    return None, None, None
                 return cmd, arg, b
         return None, None, None
 
