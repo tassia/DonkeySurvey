@@ -24,7 +24,11 @@ class Message():
     def decode_string(self,data, offset):
         str_len = struct.unpack_from('<h', data, offset)
         format = "<%ds" % (str_len)
-        string = struct.unpack_from(format, data, offset+2)
+        try:
+            string = struct.unpack_from(format, data, offset+2)
+        except Exception, err:
+            sys.stderr.write('ERROR: %s\n' % str(err))
+            return ""
         return string[0]
 
     def decode_int(self,type,data, offset):
