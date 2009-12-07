@@ -166,11 +166,9 @@ class Message():
         session.address.port = port 
         session.downloaded = downloaded
         session.uploaded = uploaded
-        session.startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        session.lastUpdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        session.source.id = 0
-        session.file.id = 0
-        session.address.id = 0
+        #session.startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        #session.lastUpdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        session.source.id = client_id
     	return session
 
     # ClientState
