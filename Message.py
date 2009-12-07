@@ -11,6 +11,7 @@ sys.path.append('./database/entities')
 
 from File import File
 from Session import Session
+from Source import Source
 from datetime import datetime, date, time
 
 class Message():
@@ -197,6 +198,27 @@ class Message():
                 except Exception, err:
                     return None, None, None
                 return cmd, arg, b
+            if (cmd == "vc"):
+                source = Source()
+                regex = "Client %s:.*" % (arg)
+                m = re.compile(regex)
+                result = re.split("\(|\)| '|'| ", m.findall(msg)[0])
+                try:
+                    m = re.compile("MD4: .*")
+                    md4 = re.split(" ", m.findall(msg)[0])
+                except Exception, err:
+                    md4 = ['', '']
+                try:
+                    m = re.compile("osinfo: .*")
+                    osinfo = re.split(" ", m.findall(msg)[0])
+                except Exception, err:
+                    osinfo = ['','']
+                source.name = result[9] 
+                source.hash = md4[1]
+                source.software = "%s %s" % (result[6], result[7])
+                source.so = osinfo[1]
+                logging.debug("%s, %s, %s, %s", source.name, source.hash, source.software, source.so)
+                return cmd, arg, source
         return None, None, None
 
     # NetworkInfo
@@ -266,6 +288,7 @@ class Message():
         download_rate = self.decode_string(raw_data, 12)
         last_seen = self.decode_int("l", raw_data, 14 + rate_len)
         #logging.debug("FileID: %d | Downloaded: %d | Download_rate: %s | Seconds since last seen: %d ", file_id, downloaded_size, download_rate, last_seen)
+        return file_id, downloaded_size
 
     # SharedFileInfo
     def decode_msg_48(self, raw_data):
