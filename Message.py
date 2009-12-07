@@ -179,15 +179,15 @@ class Message():
     def decode_msg_19(self, raw_data):
         msg = self.decode_string(raw_data,0)
         m = re.compile("Eval command: (.*) (.*)")
-        if m.search(msg):
-            cmd = m.search(msg).group(1)
-            arg = m.search(msg).group(2)
-            sources = re.split("sources:\n", msg)[1]
-            m = re.compile("^  \[(.*\)]")
-            sources2 = m.findall(sources)
-            if m.findall(sources):
-                for i in sources2:
-                    logging.debug("%s", i)
+        #if m.search(msg):
+            #cmd = m.search(msg).group(1)
+            #arg = m.search(msg).group(2)
+            #sources = re.split("sources:\n", msg)[1]
+            #m = re.compile("^  \[(.*\)]")
+            #sources2 = m.findall(sources)
+            #if m.findall(sources):
+            #    for i in sources2:
+            #        logging.debug("%s", i)
 
         #m = re.compile("MD4: [A-Z0-9]{32}")
         #if m.search(msg):

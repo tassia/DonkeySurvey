@@ -6,6 +6,9 @@ import thread
 import time
 import logging
 
+sys.path.append('./database')
+from DBConnection import *
+
 from Config import *
 from Client import *
 from Listener import *
@@ -41,7 +44,12 @@ def main():
     mldonkey = Client(cfg)
     mldonkey.connect()
 
-    # Start listener thread to receive server msgs 
+    # Start listener thread to receive server msgs
+    dbconnection = DBConnection.getInstance();
+    dbconnection.setHost(cfg.dbhost)
+    dbconnection.setDatabase(cfg.dbname) 
+    dbconnection.setUser(cfg.dbuser) 
+    dbconnection.setPassword(cfg.dbpass) 
     listener = Listener("Listener", mldonkey.connection, cfg)
     handler = MessageHandler(listener)
     #thread.start_new_thread(listener.start, ())

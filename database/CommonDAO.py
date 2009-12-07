@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./entities')
-from DBConnection import DefaultDBConnection
+from DBConnection import DBConnection
 
 ###################################################
 # Common class to be inherited from all DAO classes
@@ -12,7 +12,7 @@ class CommonDAO:
     cursor = None
 
     def __init__(self):
-        self.connection = DefaultDBConnection()
+        self.connection = DBConnection.getInstance()
         self.connection.connect()
         self.cursor = self.connection.getCursor()
 
