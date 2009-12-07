@@ -10,56 +10,43 @@ from Filename import Filename
  
 class FileTestCase(unittest.TestCase):
 
-    id = None;
-
+    hash = 'qwertyuiop'
 
     def testInsert(self):
         fdao = FileDAO()
         file = File()
-        file.hash = '34ce3rf'
-        file.size = 523434
-        file.partialSize = 52372
-        file.bestName = 'nomeDoArquivoNaRede.ext'
+        file.hash = self.hash
+        file.size = 555555 
+        file.partialSize = 55555
+        file.bestname = 'nomedoarquivonarede.ext'
         fid = fdao.insert(file)
-        self.id = file.id
-        fdao.delete(self.id)
-        assert self.id != None, 'error inserting file'
- 
-#    def testInsertFilename(self):
-#        fdao = FileDAO()
-#        file = File()
-#        file.hash = '34ce3rf'
-#        file.size = 523434
-#        file.partialSize = 52372
-#        file.bestName = 'nomeDoArquivoNaRede.ext'
-#        fid = fdao.insert(file)
-#
-#        fnamedao = FilenameDAO()
-#        filename = Filename()
-#        filename.name = 'test'
-#        fnameid = fnamedao.insert(filename)
-#            
-#        fdao.insertFilename(file, filename)
-
+        assert fid != -1, 'error inserting file'
  
     def testSelect(self):
         fdao = FileDAO()
-        file = File()
-        file.hash = '65f4gs'
-        fid = fdao.insert(file)
+        file = fdao.findByHash(self.hash)
         f = fdao.find(file.id)
-        fdao.delete(file.id)
-        assert f.hash == '65f4gs', 'error selecting file'
-   
-    def tearDown(self):
+        assert f is not None, 'error selecting file'
+
+    def testInsertOrUpdate(self):
         fdao = FileDAO()
-        fdao.delete(self.id)
+        file = fdao.findByHash(self.hash)
+        file.partialSize = 100000 
+        fid = fdao.insertOrUpdate(file)
+        assert file.id == fid, 'error updating file'
 
-
+    def testDelete(self):
+        fdao = FileDAO()
+        file = fdao.findByHash(self.hash)
+        fdao.delete(file.id)
+        f = fdao.find(file.id)
+        assert f is None, 'error deleting file'
+        
 suite = unittest.TestSuite()
-suite.addTest(FileTestCase("testSelect"))
 suite.addTest(FileTestCase("testInsert"))
-#suite.addTest(FileTestCase("testInsertFilename"))
+suite.addTest(FileTestCase("testSelect"))
+suite.addTest(FileTestCase("testInsertOrUpdate"))
+suite.addTest(FileTestCase("testDelete"))
 
 runner = unittest.TextTestRunner()
 runner.run(suite)

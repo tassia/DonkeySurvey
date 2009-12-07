@@ -14,8 +14,8 @@ class FileDAO(CommonDAO):
 
     def insert(self, file):
         try:
-            query = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES(%s, %s, %s, %s)" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName);
-            logging.debug(query);
+	    query = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES('%s', %s, %s, '%s')" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName)
+            logging.debug(query)
             self.cursor.execute(query)
             last = CommonDAO.lastID(self, self.tablename)
         except Exception, err:
@@ -27,12 +27,14 @@ class FileDAO(CommonDAO):
         try:
             f = self.findByHash(file.hash)
             if f is not None:
+                queryUpdate = "UPDATE %s SET partial_size = %s WHERE id = %s" % (self.tablename, file.partialSize, f.id)
                 if f.partialSize < file.partialSize:
-                    self.cursor.execute("""UPDATE """+self.tablename+""" SET partial_size = %s WHERE id = %s""", (file.partialSize, f.id))
-                return f.id
+		    self.cursor.execute(queryUpdate) 
+                    return f.id
             else:
-                logging.debug("INSERT INTO "+self.tablename+"(hash, size, partial_size, best_name) VALUES(%s, %s, %s, %s)", file.hash, file.size, file.partialSize, file.bestName);
-                self.cursor.execute("""INSERT INTO """+self.tablename+"""(hash, size, partial_size, best_name) VALUES(%s, %s, %s, %s)""", (file.hash, file.size, file.partialSize, file.bestName))
+	        queryInsert = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES('%s', %s, %s, '%s')" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName)
+		logging.debug(queryInsert)
+		self.cursor.execute(queryInsert)
                 last = CommonDAO.lastID(self, self.tablename)
                 return last
         except Exception, err:
@@ -45,6 +47,8 @@ class FileDAO(CommonDAO):
     def find(self, id):
         self.cursor.execute("""SELECT * FROM """+self.tablename+""" WHERE id = %s""", (id,))
         rs = self.cursor.fetchall()
+        if not rs:
+            return None
         file = File()
         for row in rs:
             file.id = row[0]
@@ -55,7 +59,8 @@ class FileDAO(CommonDAO):
         return file
 
     def findByHash(self, hash):
-        self.cursor.execute("""SELECT * FROM """+self.tablename+""" WHERE hash = %s""", (hash,))
+        query = "SELECT * FROM %s WHERE hash = '%s'" % (self.tablename, hash)
+        self.cursor.execute(query)
         rs = self.cursor.fetchall()
         if not rs:
             return None

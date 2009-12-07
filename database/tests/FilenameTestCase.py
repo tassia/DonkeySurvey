@@ -1,5 +1,6 @@
 import unittest
 import sys
+
 sys.path.append('../')
 sys.path.append('../entities')
 
@@ -8,36 +9,33 @@ from Filename import Filename
  
 class FilenameTestCase(unittest.TestCase):
 
-    id = None;
-
+    name = 'impossible.name-vinicius.pinheiro.tassia.camoes.beraldo.leal' 
 
     def testInsert(self):
         fdao = FilenameDAO()
         file = Filename()
-        file.name = 'test'
+        file.name = self.name 
         fid = fdao.insert(file)
-        self.id = file.id
-        fdao.delete(self.id)
-        assert self.id != None, 'error inserting filename'
+        assert fid != -1, 'error inserting filename'
         
  
     def testSelect(self):
         fdao = FilenameDAO()
-        file = Filename()
-        file.name = 'test'
-        fid = fdao.insert(file)
+        file = fdao.findByName(self.name)
         f = fdao.find(file.id)
-        fdao.delete(file.id)
-        assert f.name == 'test', 'error selecting filename'
+        assert f is not None, 'error selecting filename'
    
-    def tearDown(self):
+    def testDelete(self):
         fdao = FilenameDAO()
-        fdao.delete(self.id)
-
+        file = fdao.findByName(self.name)
+        fdao.delete(file.id)
+        f = fdao.find(file.id)
+        assert f is None, 'error deleting filename'
 
 suite = unittest.TestSuite()
-suite.addTest(FilenameTestCase("testSelect"))
 suite.addTest(FilenameTestCase("testInsert"))
+suite.addTest(FilenameTestCase("testSelect"))
+suite.addTest(FilenameTestCase("testDelete"))
 
 #suite = unittest.makeSuite(FilenameTestCase,'test')
 runner = unittest.TextTestRunner()

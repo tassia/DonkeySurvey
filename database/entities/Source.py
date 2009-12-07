@@ -3,6 +3,4 @@ class Source:
     name = ''
     hash = ''
     software = ''
-    version = ''
-    so = ''
-    availability = 0.0
+    osinfo = ''

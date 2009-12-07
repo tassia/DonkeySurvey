@@ -8,39 +8,38 @@ from Session import Session
 
 class SessionTestCase(unittest.TestCase):
 
-    id = None;
+    sourceId = 0
+    fileId = 0
+    addressId = 0
 
     def testInsert(self):
         sdao = SessionDAO()
         session = Session()
         session.startDate = '2009-10-10' 
         session.lastUpdate = '2009-10-10' 
-        session.source.id = 1 
-        session.file.id = 1 
-        session.address.id = 1 
-        self.id = sdao.insert(session)
-        assert self.id != None, 'error inserting session'
+        session.source.id = self.sourceId
+        session.file.id = self.fileId
+        session.address.id = self.addressId
+        sid = sdao.insert(session)
+        assert sid != -1, 'error inserting session'
 
     def testSelect(self):
         sdao = SessionDAO()
-        session = Session()
-        session.startDate = '1500-04-22' 
-        session.lastUpdate = '2009-10-10' 
-        session.source.id = 1 
-        session.file.id = 1 
-        session.address.id = 1 
-        sid = sdao.insert(session)
-        session = sdao.find(sid)
-        sdao.delete(session.id)
-        assert session.startDate == '1500-04-22', 'error selecting file'
+        session = sdao.findBySourceFileAddress(self.sourceId, self.fileId, self.addressId)
+        s = sdao.find(session.id)
+        assert s is not None, 'error selecting session'
  
-    def tearDown(self):
+    def testDelete(self):
         sdao = SessionDAO()
-        sdao.delete(self.id)
+        session = sdao.findBySourceFileAddress(self.sourceId, self.fileId, self.addressId)
+        sdao.delete(session.id)
+        s = sdao.find(session.id)
+        assert s is None, 'error deleting session'
 
 suite = unittest.TestSuite()
-suite.addTest(SessionTestCase("testSelect"))
 suite.addTest(SessionTestCase("testInsert"))
+suite.addTest(SessionTestCase("testSelect"))
+suite.addTest(SessionTestCase("testDelete"))
 
 runner = unittest.TextTestRunner()
 runner.run(suite)

@@ -1,5 +1,4 @@
 import unittest
-
 import sys
 sys.path.append('../')
 sys.path.append('../entities')
@@ -9,44 +8,36 @@ from Source import Source
 
 class SourceTestCase(unittest.TestCase):
 
-    id = None;
+    hash = 'fake_hash_3453k24j5hk234j5h32kj5kjb345'
 
     def testInsert(self):
         sdao = SourceDAO()
-        s = Source()
-        s.name = 'zezinho'
-        s.hash = '394cyawjchq2s7687s6d8f7s8d7f6sdf'
-        s.software = 'mldonkey'
-        s.version = '3.1.2'
-        s.so = 'Linux'
-        s.availability = 0.2
-        self.id = sdao.insert(s)
-        sdao.delete(self.id)
-        assert self.id != None, 'error inserting source'
+        source = Source()
+        source.name = 'zezinho'
+        source.hash = self.hash 
+        source.software = 'mldonkey 3.1.2'
+        source.osinfo = 'Linux'
+        sid = sdao.insert(source)
+        assert sid != -1, 'error inserting source'
         
  
     def testSelect(self):
         sdao = SourceDAO()
-        s = Source()
-        s.name = 'test'
-        s.hash = '394cyawjchq2s7687s6d8f7s8d7f6sdf'
-        s.software = 'mldonkey'
-        s.version = '3.1.2'
-        s.so = 'Linux'
-        s.availability = 0.2
-
-        sid = sdao.insert(s)
-        e = sdao.find(s.id)
-        sdao.delete(s.id)
-        assert s.name == 'test', 'error selecting filename'
+        source = sdao.findByHash(self.hash) 
+        s = sdao.find(source.id)
+        assert s is not None, 'error selecting source'
    
-    def tearDown(self):
+    def testDelete(self):
         sdao = SourceDAO()
-        sdao.delete(self.id)
+        source = sdao.findByHash(self.hash)
+        sdao.delete(source.id)
+        s = sdao.find(source.id)
+        assert s is None, 'error deleting source'
 
 suite = unittest.TestSuite()
-suite.addTest(SourceTestCase("testSelect"))
 suite.addTest(SourceTestCase("testInsert"))
+suite.addTest(SourceTestCase("testSelect"))
+suite.addTest(SourceTestCase("testDelete"))
 
 #unittest.main("SourceTestCase.suite")
 

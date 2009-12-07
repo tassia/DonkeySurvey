@@ -11,19 +11,24 @@ class SourceHasFile(CommonDAO):
     def __init__(self):
         CommonDAO.__init__(self)
     
-    def insertOrUpdate(self, sourceId, fileId, firstSeen):
-        rs = self.sourceHasFile(sourceId, fileId)
-        if not rs:
-            query = "INSERT INTO %s(source_id, file_id, first_seen) VALUES(%d, %d, '%s')" % (self.jointable, sourceId, fileId, firstSeen)
-            logging.debug(query)
-            self.cursor.execute(query)
+    def insertOrUpdate(self, sourceId, fileId, firstSeen, availability):
+        rs = self.findBySourceFile(sourceId, fileId)
+        if rs is not None:
+            queryUpdate = "UPDATE %s SET availability = %s WHERE source_id = %s and file_id = %s" % (self.jointable, availability, sourceId, fileId)
+            logging.debug(queryUpdate)
+	    self.cursor.execute(queryUpdate) 
+        else:
+            queryInsert = "INSERT INTO %s(source_id, file_id, first_seen, availability) VALUES(%s, %s, '%s', %s)" % (self.jointable, sourceId, fileId, firstSeen, availability)
+            logging.debug(queryInsert)
+            self.cursor.execute(queryInsert)
         #CommonDAO.lastID(self, self.jointable)
 
     def delete(self, sourceId, fileId):
         self.cursor.execute("""DELETE FROM """+self.jointable+""" WHERE source_id = %s AND file_id = %s""", (sourceId, fileId))
 
-    def sourceHasFile(self, sourceId, fileId):
-        self.cursor.execute("""SELECT * FROM """+self.jointable+""" WHERE source_id = %s AND file_id = %s""", (sourceId, fileId))
+    def findBySourceFile(self, sourceId, fileId):
+        query = "SELECT * FROM %s WHERE source_id = %s AND file_id = %s" % (self.tablename, sourceId, fileId)
+        self.cursor.execute(query)
         rs = self.cursor.fetchall()
         return rs
 
