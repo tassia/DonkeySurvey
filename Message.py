@@ -60,7 +60,9 @@ class Message():
         avail_len = self.decode_int("h", raw_data, 8)
         availability = self.decode_string(raw_data, 8)
         logging.debug("FileNumber: %d | ClientNumber: %d | Availability_len: %d | Availability: %s ", file_number, client_number, avail_len, availability)
-    
+        logging.debug("%s, %s, %s", file_number, client_number, float(availability.count('1')) / len(availability))
+        return file_number, client_number,  float(availability.count('1')) / len(availability)
+
     # FileAddSource
     def decode_msg_10(self, raw_data):
         file_id = self.decode_int("l", raw_data, 0)
