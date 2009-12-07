@@ -3,10 +3,10 @@ import MySQLdb
 class DBConnection:
 
     instance = None
-    host = '192.168.0.137'
-    database = 'donkeysurvey'
-    user = 'donkeysurvey'
-    password = 'donkeysurvey'
+    #host = None
+    #database = None
+    #user = None
+    #password = None
     con = None
 
     def __init__(self, host, database, user, password):

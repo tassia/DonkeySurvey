@@ -88,5 +88,13 @@ class Config():
                self.username = a
            elif o in ("-P", "--pass"):
                self.password = a
+           elif o in ("-D", "--dbhost"):
+               self.dbhost = a
+           elif o in ("-N", "--dbname"):
+               self.dbname = a
+           elif o in ("-u", "--dbuser"):
+               self.dbuser = a
+           elif o in ("-w", "--dbpass"):
+               self.dbpass = a
            else:
                assert False, "unhandled option"
