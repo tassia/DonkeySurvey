@@ -59,6 +59,7 @@ class SocketCommon():
         if length is not None:
             opcode = self.read_opcode()
             raw_data = self.read_data(length-SIZE_OPCODE)
+            logging.debug("=================OPCODE = %s", opcode)
             msg = Message(opcode, raw_data, self.config, length)
             try:
                 logging.debug("RECV %d bytes | Opcode = %d (%s)", length, opcode, OPCODE_RECV[str(opcode)])
