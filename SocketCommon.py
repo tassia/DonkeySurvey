@@ -60,7 +60,10 @@ class SocketCommon():
             opcode = self.read_opcode()
             raw_data = self.read_data(length-SIZE_OPCODE)
             msg = Message(opcode, raw_data, self.config, length)
-            logging.debug("RECV %d bytes | Opcode = %d (%s)", length, opcode, OPCODE_RECV[str(opcode)])
+            try:
+                logging.debug("RECV %d bytes | Opcode = %d (%s)", length, opcode, OPCODE_RECV[str(opcode)])
+            except Exception, err:
+                return msg    
             return msg
             #if opcode is 48:
             #    file_id = msg.decode()
