@@ -13,17 +13,24 @@ class SourceDAO(CommonDAO):
         CommonDAO.__init__(self)
 
     def insert(self, source):
-        query = "INSERT INTO %s (name, hash, software, osinfo) values('%s', '%s', '%s', '%s')" % (self.tablename, source.name, source.hash, source.software, source.osinfo)
-        logging.debug(query)
-        self.cursor.execute(query)
-        last = self.lastID(self.tablename)
-        return last
+        try:
+            query = "INSERT INTO %s (name, hash, software, osinfo) values('%s', '%s', '%s', '%s')" % (self.tablename, source.name, source.hash, source.software, source.osinfo)
+            logging.debug(query)
+            self.cursor.execute(query)
+            last = self.lastID(self.tablename)
+            return last
+        except Exception, err:
+            sys.stderr.write('ERROR: %s\n' % str(err))
+            return None  
 
     def delete(self, id):
-        self.cursor.execute("""DELETE FROM """+self.tablename+""" WHERE id = %s""", (id,))
+        query = "DELETE FROM %s WHERE id = %s" % (self.tablename, id)
+        logging.debug(query)
+        self.cursor.execute(query)
 
     def find(self, id):
         query = "SELECT * FROM %s WHERE id = %s" % (self.tablename, id)
+        logging.debug(query)
         self.cursor.execute(query)
         rs = self.cursor.fetchall()
         if not rs:
@@ -39,6 +46,7 @@ class SourceDAO(CommonDAO):
 
     def findByHash(self, hash):
         query = "SELECT * FROM %s WHERE hash = '%s'" % (self.tablename, hash)
+        logging.debug(query)
         self.cursor.execute(query)
         rs = self.cursor.fetchall()
         if not rs:

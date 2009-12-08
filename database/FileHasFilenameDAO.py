@@ -18,7 +18,7 @@ class FileHasFilenameDAO(CommonDAO):
             query = "INSERT INTO %s(file_id, filename_id) VALUES(%s, %s)" % (self.jointable, fileId, filenameId)
             logging.debug(query)
             self.cursor.execute(query)
-        #CommonDAO.lastID(self, self.jointable)
+        #self.lastID(self.jointable)
 
     def delete(self, fileId, filenameId):
         self.cursor.execute("""DELETE FROM """+self.jointable+""" WHERE file_id = %s AND filename_id = %s""", (fileId, filenameId))

@@ -13,17 +13,22 @@ class SourceHasFileDAO(CommonDAO):
         CommonDAO.__init__(self)
     
     def insertOrUpdate(self, sourceId, fileId, availability):
-        rs = self.findBySourceFile(sourceId, fileId)
-        if rs is not None:
-            queryUpdate = "UPDATE %s SET availability = %s WHERE source_id = %s and file_id = %s" % (self.jointable, availability, sourceId, fileId)
-            logging.debug(queryUpdate)
-	    self.cursor.execute(queryUpdate) 
-        else:
-            firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            queryInsert = "INSERT INTO %s(source_id, file_id, first_seen, availability) VALUES(%s, %s, '%s', %s)" % (self.jointable, sourceId, fileId, firstSeen, availability)
-            logging.debug(queryInsert)
-            self.cursor.execute(queryInsert)
-        #CommonDAO.lastID(self, self.jointable)
+        try:
+            rs = self.findBySourceFile(sourceId, fileId)
+            if rs is not None:
+                queryUpdate = "UPDATE %s SET availability = %s WHERE source_id = %s and file_id = %s" % (self.jointable, availability, sourceId, fileId)
+                logging.debug(queryUpdate)
+	        self.cursor.execute(queryUpdate) 
+            else:
+                firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                queryInsert = "INSERT INTO %s(source_id, file_id, first_seen, availability) VALUES(%s, %s, '%s', %s)" % (self.jointable, sourceId, fileId, firstSeen, availability)
+                logging.debug(queryInsert)
+                self.cursor.execute(queryInsert)
+        except Exception, err:
+            sys.stderr.write('ERROR: %s\n' % str(err))
+            return None  
+        
+        #self.lastID(self.jointable)
 
     def delete(self, sourceId, fileId):
         self.cursor.execute("""DELETE FROM """+self.jointable+""" WHERE source_id = %s AND file_id = %s""", (sourceId, fileId))

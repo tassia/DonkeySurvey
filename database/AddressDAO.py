@@ -23,7 +23,7 @@ class AddressDAO(CommonDAO):
 	        queryInsert = "INSERT INTO %s(ip, port) VALUES('%s', %s)" % (self.tablename, address.ip, address.port)
                 logging.debug(queryInsert)
                 self.cursor.execute(queryInsert)
-                last = CommonDAO.lastID(self, self.tablename)
+                last = self.lastID(self.tablename)
                 return last
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % std(err))

@@ -19,14 +19,14 @@ class SessionDAO(CommonDAO):
             source_id, file_id, address_id) VALUES('%s', '%s', %s, %s, %s, %s, %s)" % \
             (self.tablename, startDate, startDate, session.downloaded, \
             session.uploaded, session.source.id, session.file.id, session.address.id)
-        logging.debug(query);
         try:
+            logging.debug(query);
             self.cursor.execute(query)
+            session.id = self.lastID(self.tablename)
+            return session.id 
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % std(err))
             return None
-        session.id = CommonDAO.lastID(self, self.tablename)
-        return session.id 
 
     def insertOrUpdate(self, session):
         try:
@@ -46,7 +46,7 @@ class SessionDAO(CommonDAO):
                     session.uploaded, session.source.id, session.file.id, session.address.id)
                 logging.debug(queryInsert)
                 self.cursor.execute(queryInsert)
-                last = CommonDAO.lastID(self, self.tablename)
+                last = self.lastID(self.tablename)
                 return last
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
