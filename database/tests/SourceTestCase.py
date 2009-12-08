@@ -20,7 +20,6 @@ class SourceTestCase(unittest.TestCase):
         sid = sdao.insert(source)
         assert sid != -1, 'error inserting source'
         
- 
     def testSelect(self):
         sdao = SourceDAO()
         source = sdao.findByHash(self.hash) 

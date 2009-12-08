@@ -14,7 +14,7 @@ class SessionDAO(CommonDAO):
 
     def insert(self, session):
 	query = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
-            source_id, file_id, address_id) VALUES('%s', '%s', %d, %d, %s, %s, %s)" % \
+            source_id, file_id, address_id) VALUES('%s', '%s', %s, %s, %s, %s, %s)" % \
             (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
             session.uploaded, session.source.id, session.file.id, session.address.id)
         logging.debug(query);
@@ -27,27 +27,26 @@ class SessionDAO(CommonDAO):
         return session.id 
 
     def insertOrUpdate(self, session):
-        queryInsert = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
-            source_id, file_id, address_id) VALUES('%s', '%s', %d, %d, %s, %s, %s)" % \
-            (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
-            session.uploaded, session.source.id, session.file.id, session.address.id)
-        queryInsert = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
-            source_id, file_id, address_id) VALUES('%s', '%s', %d, %d, %s, %s, %s)" % \
-            (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
-            session.uploaded, session.source.id, session.file.id, session.address.id)
         try:
             s = self.findBySourceFileAddress(session.source.id, session.file.id, session.address.id)
-            if s is None:
+            if s is not None:
+                queryUpdate = "UPDATE %s SET last_update = %s, downloaded = %s, uploaded = %s \
+                    WHERE id = %s" % (self.tablename, session.lastUpdate, session.downloaded, \
+                    session.uploaded, s.id)
+                self.cursor.execute(queryUpdate)
+                return s.id
+            else:
+                queryInsert = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
+                    source_id, file_id, address_id) VALUES('%s', '%s', %s, %s, %s, %s, %s)" % \
+                    (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
+                    session.uploaded, session.source.id, session.file.id, session.address.id)
                 logging.debug(queryInsert)
                 self.cursor.execute(queryInsert)
-            else:
-                
-                return s.id
+                last = CommonDAO.lastID(self, self.tablename)
+                return last
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
             return None 
-        last = CommonDAO.lastID(self, self.tablename)
-        return last
 
     def delete(self, id):
         self.cursor.execute("""DELETE FROM """+self.tablename+""" WHERE id = %s""", (id,))

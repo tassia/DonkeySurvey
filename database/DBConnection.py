@@ -3,6 +3,10 @@ import MySQLdb
 class DBConnection:
 
     instance = None
+    host = 'pcgerosa'
+    database = 'donkeystats'
+    user = 'donkeystats'
+    password = 'donkey'
     #host = None
     #database = None
     #user = None

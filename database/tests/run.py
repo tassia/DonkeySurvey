@@ -1,5 +1,5 @@
-python Ed2kuserTestCase.py  
+python SourceTestCase.py  
 python FilenameTestCase.py  
 python FileTestCase.py 
 python SessionTestCase.py
-python TestConnection.py
+python Address.py

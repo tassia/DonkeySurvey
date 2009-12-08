@@ -18,10 +18,10 @@ class FileDAO(CommonDAO):
             logging.debug(query)
             self.cursor.execute(query)
             last = CommonDAO.lastID(self, self.tablename)
+            return last
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
-            return -1
-        return last
+            return None 
 
     def insertOrUpdate(self, file):
         try:
@@ -39,7 +39,7 @@ class FileDAO(CommonDAO):
                 return last
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
-            return -1
+            return None 
 
     def delete(self, id):
         self.cursor.execute("""DELETE FROM """+self.tablename+""" WHERE id = %s""", (id,))

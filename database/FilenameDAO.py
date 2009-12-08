@@ -13,11 +13,15 @@ class FilenameDAO(CommonDAO):
         CommonDAO.__init__(self)
     
     def insert(self, filename):
-        query = "INSERT INTO %s(name) VALUES(\"%s\")" % (self.tablename, filename.name)
-        logging.debug(query)
-        self.cursor.execute(query)
-        last = CommonDAO.lastID(self, self.tablename)
-        return last
+        try:
+            query = "INSERT INTO %s(name) VALUES(\"%s\")" % (self.tablename, filename.name)
+            logging.debug(query)
+            self.cursor.execute(query)
+            last = CommonDAO.lastID(self, self.tablename)
+            return last
+        except Exception, err:
+            sys.stderr.write('ERROR: %s\n' % str(err))
+            return None  
 
     def insertOrUpdate(self, filename):
         query = "INSERT INTO %s (name) VALUES (\"%s\")" % (self.tablename, filename.name)
@@ -26,14 +30,13 @@ class FilenameDAO(CommonDAO):
             if fname is None:
                 logging.debug(query)
                 self.cursor.execute(query)
+                last = CommonDAO.lastID(self, self.tablename)
+                return last
             else:
                 return fname.id
-            
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
-            return -1
-        last = CommonDAO.lastID(self, self.tablename)
-        return last
+            return None 
 
     def delete(self, id):
         self.cursor.execute("""DELETE FROM """+self.tablename+""" WHERE id = %s""", (id,))
