@@ -16,8 +16,7 @@ class AddressHasFileDAO(CommonDAO):
             rs = self.findByAddressFile(addressId, fileId)
             if not rs:
                 firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	        query = "INSERT INTO %s(address_id, file_id, first_seen) VALUES(%d, \
-                    %d, '%s')" % (self.jointable, addressId, fileId, firstSeen)
+	        query = "INSERT INTO %s(address_id, file_id, first_seen) VALUES(%s, %s,'%s')" % (self.jointable, addressId, fileId, firstSeen)
                 logging.debug(query)
                 self.cursor.execute(query)
                 last = CommonDAO.lastID(self, self.tablename)
@@ -34,6 +33,7 @@ class AddressHasFileDAO(CommonDAO):
 
     def findByAddressFile(self, addressId, fileId):
 	query = "SELECT * FROM %s WHERE address_id = %s AND file_id = %s" % (self.jointable, addressId, fileId) 
+        logging.debug(query)
         self.cursor.execute(query)
         rs = self.cursor.fetchall()
         if not rs:
