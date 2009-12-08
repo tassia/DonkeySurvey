@@ -29,8 +29,8 @@ class AddressHasFileDAO(CommonDAO):
         #CommonDAO.lastID(self, self.jointable)
 
     def delete(self, addressId, fileId):
-	self.cursor.execute("""DELETE FROM """+self.jointable+""" WHERE \
-            address_id = %s AND file_id = %s""", (addressId, fileId))
+	query = "DELETE FROM %s WHERE address_id = %s AND file_id = %s" % (self.jointable, addressId, fileId)
+	self.cursor.execute(query)
 
     def sourceHasFile(self, addressId, fileId):
 	query = "SELECT * FROM %s WHERE address_id = %s AND file_id = %s" % (self.jointable, addressId, fileId) 
