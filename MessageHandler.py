@@ -63,7 +63,10 @@ class MessageHandler:
         # Action: update and persist session on database
         elif self.msg.opcode is 15:
             session = self.msg.decode_msg_15(self.msg.raw_data)
+#            if session:
             if session and (session.source.id in self.source_id_hash):
+                logging.debug("*******SourceID: %s",session.address.ip, session.address.port,session.uploaded,session.downloaded, session.session.source.id)
+                logging.debug(self.source_id_hash)
                 sdao = SessionDAO()
                 adao = AddressDAO()
                 session.address.id = adao.insertOrUpdate(session.address)
@@ -102,8 +105,11 @@ class MessageHandler:
                     self.listener.send_cmd(cmd)
             if cmd == "vc" and result:
                 # cmd = 'vc', arg = source_id, result = source
-                source = result
-                if source.hash != "00000000000000000000000000000000":
+                source = result[0]
+                address = result[1]
+                if source.hash == "00000000000000000000000000000000":
+                    logging.debug("****** IP-no-hash: %s",address.ip)
+                else:
                     self.source_id_hash[arg]=source.hash
                     logging.debug("###############################################")
                     logging.debug(self.source_id_hash)
