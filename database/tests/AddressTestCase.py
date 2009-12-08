@@ -18,7 +18,7 @@ class AddressTestCase(unittest.TestCase):
         address.ip = self.ip 
         address.port = self.port 
         aid = adao.insertOrUpdate(address)
-        assert aid != -1, 'error inserting address'
+        assert aid != None, 'error inserting address'
         
  
     def testSelect(self):

@@ -27,16 +27,21 @@ class SessionDAO(CommonDAO):
         return session.id 
 
     def insertOrUpdate(self, session):
-        query = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
+        queryInsert = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
+            source_id, file_id, address_id) VALUES('%s', '%s', %d, %d, %s, %s, %s)" % \
+            (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
+            session.uploaded, session.source.id, session.file.id, session.address.id)
+        queryInsert = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
             source_id, file_id, address_id) VALUES('%s', '%s', %d, %d, %s, %s, %s)" % \
             (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
             session.uploaded, session.source.id, session.file.id, session.address.id)
         try:
             s = self.findBySourceFileAddress(session.source.id, session.file.id, session.address.id)
             if s is None:
-                logging.debug(query)
-                self.cursor.execute(query)
+                logging.debug(queryInsert)
+                self.cursor.execute(queryInsert)
             else:
+                
                 return s.id
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
