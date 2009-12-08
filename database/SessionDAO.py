@@ -4,6 +4,7 @@ import logging
 sys.path.append('./entities')
 from CommonDAO import CommonDAO
 from Session import Session
+from datetime import datetime, date, time
 
 class SessionDAO(CommonDAO):
 
@@ -13,9 +14,10 @@ class SessionDAO(CommonDAO):
         CommonDAO.__init__(self)
 
     def insert(self, session):
+        startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	query = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
             source_id, file_id, address_id) VALUES('%s', '%s', %s, %s, %s, %s, %s)" % \
-            (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
+            (self.tablename, startDate, startDate, session.downloaded, \
             session.uploaded, session.source.id, session.file.id, session.address.id)
         logging.debug(query);
         try:
@@ -30,15 +32,17 @@ class SessionDAO(CommonDAO):
         try:
             s = self.findBySourceFileAddress(session.source.id, session.file.id, session.address.id)
             if s is not None:
+                lastUpdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 queryUpdate = "UPDATE %s SET last_update = %s, downloaded = %s, uploaded = %s \
-                    WHERE id = %s" % (self.tablename, session.lastUpdate, session.downloaded, \
+                    WHERE id = %s" % (self.tablename, lastUpdate, session.downloaded, \
                     session.uploaded, s.id)
                 self.cursor.execute(queryUpdate)
                 return s.id
             else:
+                startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 queryInsert = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
                     source_id, file_id, address_id) VALUES('%s', '%s', %s, %s, %s, %s, %s)" % \
-                    (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
+                    (self.tablename, startDate, startDate, session.downloaded, \
                     session.uploaded, session.source.id, session.file.id, session.address.id)
                 logging.debug(queryInsert)
                 self.cursor.execute(queryInsert)

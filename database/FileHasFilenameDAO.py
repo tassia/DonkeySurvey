@@ -13,7 +13,7 @@ class FileHasFilenameDAO(CommonDAO):
         CommonDAO.__init__(self)
     
     def insertOrUpdate(self, fileId, filenameId):
-        rs = self.fileHasFilename(fileId, filenameId)
+        rs = self.findByFileFilename(fileId, filenameId)
         if not rs:
             query = "INSERT INTO %s(file_id, filename_id) VALUES(%s, %s)" % (self.jointable, fileId, filenameId)
             logging.debug(query)
@@ -23,18 +23,7 @@ class FileHasFilenameDAO(CommonDAO):
     def delete(self, fileId, filenameId):
         self.cursor.execute("""DELETE FROM """+self.jointable+""" WHERE file_id = %s AND filename_id = %s""", (fileId, filenameId))
 
-    def fileHasFilename(self, fileId, filenameId):
+    def findByFileFilename(self, fileId, filenameId):
         self.cursor.execute("""SELECT * FROM """+self.jointable+""" WHERE file_id = %s AND filename_id = %s""", (fileId, filenameId))
         rs = self.cursor.fetchall()
         return rs
-
-    #def findByName(self, name):
-    #    self.cursor.execute("""SELECT * FROM """+self.tablename+""" WHERE name = %s""", (name,))
-    #    rs = self.cursor.fetchall()
-    #    if not rs:
-    #        return None
-    #    filename = Filename()
-    #    for row in rs:
-    #        filename.id = row[0]
-    #        filename.name = row[1] 
-    #    return filename

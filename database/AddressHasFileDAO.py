@@ -26,8 +26,6 @@ class AddressHasFileDAO(CommonDAO):
             sys.stderr.write('ERROR: %s\n' % str(err))
             return None
 
-        #CommonDAO.lastID(self, self.jointable)
-
     def delete(self, addressId, fileId):
 	query = "DELETE FROM %s WHERE address_id = %s AND file_id = %s" % (self.jointable, addressId, fileId)
 	self.cursor.execute(query)
