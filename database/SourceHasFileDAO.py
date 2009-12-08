@@ -3,6 +3,7 @@ import logging
 
 sys.path.append('./entities')
 from CommonDAO import CommonDAO
+from datetime import datetime, date, time
 
 class SourceHasFileDAO(CommonDAO):
 
@@ -28,7 +29,8 @@ class SourceHasFileDAO(CommonDAO):
         self.cursor.execute("""DELETE FROM """+self.jointable+""" WHERE source_id = %s AND file_id = %s""", (sourceId, fileId))
 
     def findBySourceFile(self, sourceId, fileId):
-        query = "SELECT * FROM %s WHERE source_id = %s AND file_id = %s" % (self.tablename, sourceId, fileId)
+        query = "SELECT * FROM %s WHERE source_id = %s AND file_id = %s" % (self.jointable, sourceId, fileId)
+        logging.debug(query)
         self.cursor.execute(query)
         rs = self.cursor.fetchall()
         if not rs:
