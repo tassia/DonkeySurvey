@@ -203,15 +203,20 @@ class Message():
                 source = Source()
                 address = Address()
                 regex = "Client %s:.*" % (arg)
-                m = re.compile(regex)
-                result = re.split("\(|\)| '|'| ", m.findall(msg)[0])
-                result2 = re.split("\(|\)| '|'| |:", m.findall(msg)[0])
-                logging.debug(result2)
+                try:
+                    m = re.compile(regex)
+                    result = re.split("\(|\)| '|'| ", m.findall(msg)[0])
+                    result2 = re.split("\(|\)| '|'| |:", m.findall(msg)[0])
+                    logging.debug(result2)
+                except Exception, err:
+                    return None, None, None
+
                 try:
                     m = re.compile("MD4: .*")
                     md4 = re.split(" ", m.findall(msg)[0])
                 except Exception, err:
                     md4 = ['', '']
+
                 try:
                     m = re.compile("osinfo: .*")
                     osinfo = re.split(" ", m.findall(msg)[0])
