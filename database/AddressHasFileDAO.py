@@ -3,6 +3,7 @@ import logging
 
 sys.path.append('./entities')
 from CommonDAO import CommonDAO
+from datetime import datetime, date, time
 
 class AddressHasFileDAO(CommonDAO):
 
