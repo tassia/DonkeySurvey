@@ -12,13 +12,20 @@ class AddressHasFileDAO(CommonDAO):
         CommonDAO.__init__(self)
     
     def insert(self, addressId, fileId):
+        try:
         rs = self.sourceHasFile(addressId, fileId)
-        if not rs:
-            firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	    query = "INSERT INTO %s(address_id, file_id, first_seen) VALUES(%d, \
-                %d, '%s')" % (self.jointable, addressId, fileId, firstSeen)
-            logging.debug(query)
-            self.cursor.execute(query)
+            if not rs:
+                firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	        query = "INSERT INTO %s(address_id, file_id, first_seen) VALUES(%d, \
+                    %d, '%s')" % (self.jointable, addressId, fileId, firstSeen)
+                logging.debug(query)
+                self.cursor.execute(query)
+                last = CommonDAO.lastID(self, self.tablename)
+                return last 
+        except Exception, err:
+            sys.stderr.write('ERROR: %s\n' % str(err))
+            return None
+
         #CommonDAO.lastID(self, self.jointable)
 
     def delete(self, addressId, fileId):
@@ -29,5 +36,7 @@ class AddressHasFileDAO(CommonDAO):
 	query = "SELECT * FROM %s WHERE address_id = %s AND file_id = %s" % (self.jointable, addressId, fileId) 
         self.cursor.execute(query)
         rs = self.cursor.fetchall()
+        if not rs:
+            return None
         return rs
 
