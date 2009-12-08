@@ -18,7 +18,11 @@ class SessionDAO(CommonDAO):
             (self.tablename, session.startDate, session.lastUpdate, session.downloaded, \
             session.uploaded, session.source.id, session.file.id, session.address.id)
         logging.debug(query);
-        self.cursor.execute(query)
+        try:
+            self.cursor.execute(query)
+        except Exception, err:
+            sys.stderr.write('ERROR: %s\n', % std(err))
+            return None
         session.id = CommonDAO.lastID(self, self.tablename)
         return session.id 
 
@@ -36,7 +40,7 @@ class SessionDAO(CommonDAO):
                 return s.id
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
-            return -1
+            return None 
         last = CommonDAO.lastID(self, self.tablename)
         return last
 
