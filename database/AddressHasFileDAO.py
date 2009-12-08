@@ -13,7 +13,7 @@ class AddressHasFileDAO(CommonDAO):
     
     def insert(self, addressId, fileId):
         try:
-        rs = self.sourceHasFile(addressId, fileId)
+            rs = self.sourceHasFile(addressId, fileId)
             if not rs:
                 firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	        query = "INSERT INTO %s(address_id, file_id, first_seen) VALUES(%d, \
