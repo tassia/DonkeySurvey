@@ -31,6 +31,8 @@ class SourceHasFileDAO(CommonDAO):
         query = "SELECT * FROM %s WHERE source_id = %s AND file_id = %s" % (self.tablename, sourceId, fileId)
         self.cursor.execute(query)
         rs = self.cursor.fetchall()
+        if not rs:
+            return None
         return rs
 
     #def findByName(self, name):
