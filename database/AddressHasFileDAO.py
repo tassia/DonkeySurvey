@@ -11,9 +11,10 @@ class AddressHasFileDAO(CommonDAO):
     def __init__(self):
         CommonDAO.__init__(self)
     
-    def insertOrUpdate(self, addressId, fileId, firstSeen):
+    def insert(self, addressId, fileId):
         rs = self.sourceHasFile(addressId, fileId)
         if not rs:
+            firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	    query = "INSERT INTO %s(address_id, file_id, first_seen) VALUES(%d, \
                 %d, '%s')" % (self.jointable, addressId, fileId, firstSeen)
             logging.debug(query)

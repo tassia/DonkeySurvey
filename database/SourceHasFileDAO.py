@@ -4,20 +4,21 @@ import logging
 sys.path.append('./entities')
 from CommonDAO import CommonDAO
 
-class SourceHasFile(CommonDAO):
+class SourceHasFileDAO(CommonDAO):
 
     jointable = "source_has_file"
 
     def __init__(self):
         CommonDAO.__init__(self)
     
-    def insertOrUpdate(self, sourceId, fileId, firstSeen, availability):
+    def insertOrUpdate(self, sourceId, fileId, availability):
         rs = self.findBySourceFile(sourceId, fileId)
         if rs is not None:
             queryUpdate = "UPDATE %s SET availability = %s WHERE source_id = %s and file_id = %s" % (self.jointable, availability, sourceId, fileId)
             logging.debug(queryUpdate)
 	    self.cursor.execute(queryUpdate) 
         else:
+            firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             queryInsert = "INSERT INTO %s(source_id, file_id, first_seen, availability) VALUES(%s, %s, '%s', %s)" % (self.jointable, sourceId, fileId, firstSeen, availability)
             logging.debug(queryInsert)
             self.cursor.execute(queryInsert)
