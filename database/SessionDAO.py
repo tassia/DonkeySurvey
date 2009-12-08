@@ -21,7 +21,7 @@ class SessionDAO(CommonDAO):
         try:
             self.cursor.execute(query)
         except Exception, err:
-            sys.stderr.write('ERROR: %s\n', % std(err))
+            sys.stderr.write('ERROR: %s\n' % std(err))
             return None
         session.id = CommonDAO.lastID(self, self.tablename)
         return session.id 
