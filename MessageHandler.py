@@ -76,36 +76,38 @@ class MessageHandler:
             sourceId = str(session.source.id) #fake
             logging.debug(sourceId)
             logging.debug(self.source_id_hash)
-            if session:
-                if sourceId in self.source_id_hash:
-                    session.address.id = addressId
-                    logging.debug("*******SourceID: %s" % (session.source.id))
-                    logging.debug(self.source_id_hash)
-                    for file in self.file_sources:
-                        if session.source.id in self.file_sources[file]:
-                            if int(file) in self.file_id_hash:
-                                session.file.id = fdao.findByHash(self.file_id_hash[int(file)]).id
-                                #logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (file_hash, f.findByHash(file_hash).id,addressId))
-                            #TODO: consider more than one session with the same source
-                    # updating source.id to real one 
-                    logging.debug("Session_File_ID = %s" % (session.file.id))
-                    logging.debug("*******SourceID: %s" % (sourceId))
-                    logging.debug(self.source_id_hash)
-                    session.source.id = srcdao.findByHash(self.source_id_hash[sourceId]).id
-                    logging.debug("*******Sourcehash: %s" % (self.source_id_hash[sourceId]))
-                    #logging.debug(source.name,source.hash,source.software,source.osinfo)
-                    sessionId = sdao.insertOrUpdate(session)
-                        
-                    if sessionId is None:
-                        logging.debug("SessionId is null")
-                else:
-                    logging.debug("****** IP-no-hash: %s",addressId)
-                    for file in self.file_sources:
-                        if session.source.id in self.file_sources[file]:
-                            if int(file) in self.file_id_hash:
-                                file_hash = self.file_id_hash[int(file)]
-                                logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (file_hash, fdao.findByHash(file_hash).id,addressId))
-                                ahf.insert(addressId, fdao.findByHash(file_hash).id)
+#            if session:
+#                if sourceId in self.source_id_hash:
+            if session and (sourceId in self.source_id_hash):
+                session.address.id = addressId
+                logging.debug("*******SourceID: %s" % (session.source.id))
+                logging.debug(self.source_id_hash)
+                for file in self.file_sources:
+                    if session.source.id in self.file_sources[file]:
+                        if int(file) in self.file_id_hash:
+                            session.file.id = fdao.findByHash(self.file_id_hash[int(file)]).id
+                            #logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (file_hash, f.findByHash(file_hash).id,addressId))
+                        #TODO: consider more than one session with the same source
+                # updating source.id to real one 
+                logging.debug("Session_File_ID = %s" % (session.file.id))
+                logging.debug("*******SourceID: %s" % (sourceId))
+                logging.debug(self.source_id_hash)
+                session.source.id = srcdao.findByHash(self.source_id_hash[sourceId]).id
+                logging.debug("*******Sourcehash: %s" % (self.source_id_hash[sourceId]))
+                #logging.debug(source.name,source.hash,source.software,source.osinfo)
+                sessionId = sdao.insertOrUpdate(session)
+                    
+                if sessionId is None:
+                    logging.debug("SessionId is null")
+
+            if session and not (sourceId in self.source_id_hash):
+                logging.debug("****** IP-no-hash: %s",addressId)
+                for file in self.file_sources:
+                    if session.source.id in self.file_sources[file]:
+                        if int(file) in self.file_id_hash:
+                            file_hash = self.file_id_hash[int(file)]
+                            logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (file_hash, fdao.findByHash(file_hash).id,addressId))
+                            ahf.insert(addressId, fdao.findByHash(file_hash).id)
 
 
         # Message: ClientState
