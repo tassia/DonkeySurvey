@@ -10,6 +10,7 @@ from ConfigParser import *
 class Config():
    def __init__(self):
        self.debug = 0
+       self.background = 0
        self.output_filename = "/dev/null"
        self.hostname = "127.0.0.1"
        self.port = 4001
@@ -23,13 +24,19 @@ class Config():
 
    def usage(self):
        print "Syntax error"
+       print " [ general ]"
        print "  -h, --help           This help"
+       print "  -b, --background     Set daemon mode, runing in background (Default is foreground)"
        print "  -d, --debug          Set debug to true. Default is false."
        print "  -o, --output=FILE    Dump all output in FILE. (Default is Stdout)"
+       print ""
+       print " [ mldonkey ]"
        print "  -H, --host=HOST      Host name to connect. (Default is 127.0.0.1)"
        print "  -p, --port=PORT      Port to connect. (Default is 4001)"
        print "  -U, --user=USER      User for authentication. (Default is admin)"
        print "  -P, --pass=PASS      Password for authentication. (Default is empty)"
+       print ""
+       print " [ database ]"
        print "  -D, --dbhost=HOST    Host name for database connection. (Default is 127.0.0.1)"
        print "  -N, --dbname=DBNAME  Database name for store data. (Default is donkeysurvey)"
        print "  -u, --dbuser=DBUSER  Database username for store data. (Default is donkeysurvey)"
@@ -49,33 +56,38 @@ class Config():
                              os.path.expanduser('~/.donkeysurveyrc')])
        except (MissingSectionHeaderError), err:
            logging.error("Error in config file syntax: %s", str(err))
-           sys.exit(2)
+           os.abort()
  
+       self.debug = self.read_option('general', 'background')
        self.debug = self.read_option('general', 'debug')
        self.output_filename = self.read_option('general', 'output_filename')
+
        self.hostname = self.read_option('mldonkey', 'hostname')
        self.port = self.read_option('mldonkey', 'port')
        self.username = self.read_option('mldonkey', 'username')
        self.password = self.read_option('mldonkey', 'password')
+
        self.dbhost = self.read_option('database', 'dbhost')
        self.dbname = self.read_option('database', 'dbname')
        self.dbuser = self.read_option('database', 'dbuser')
        self.dbpass = self.read_option('database', 'dbpass')
 
-       short_options = "hdo:H:p:U:P:D:N:u:w:"
-       long_options = ["help", "debug", "output=", "host=", 
+       short_options = "hbdo:H:p:U:P:D:N:u:w:"
+       long_options = ["help", "background", "debug", "output=", "host=", 
                        "port=", "user=", "pass=", "dbhost=", "dbname=", "dbuser=", "dbpass="]
        try:
            opts, args = getopt.getopt(sys.argv[1:], short_options, long_options)
        except getopt.GetoptError, err:
            logging.error("Error parsing args: %s", str(err))
            self.usage()
-           sys.exit(2)
+           os.abort()
 
        for o, a in opts:
            if o in ("-h", "--help"):
                self.usage()
-               sys.exit(0)
+               os.abort()
+           elif o in ("-b", "--background"):
+               self.background = 1
            elif o in ("-d", "--debug"):
                self.debug = 1
            elif o in ("-o", "--output"):

@@ -5,10 +5,12 @@ import getopt
 import thread
 import time
 import logging
+import atexit
+import resource
 
 sys.path.append('./database')
-from DBConnection import *
 
+from DBConnection import *
 from Config import *
 from Client import *
 from Listener import *
@@ -19,6 +21,30 @@ def main():
     cfg = Config()
     cfg.load_options()
 
+    if cfg.background is 1:
+        # Detach a process from the controlling terminal and run it in the
+        # background as a daemon.
+        try:
+           pid = os.fork()
+        except OSError, e:
+           raise Exception, "%s [%d]" % (e.strerror, e.errno)
+    
+        if (pid == 0):       # The first child.
+           os.setsid()
+    
+           try:
+              pid = os.fork()        # Fork a second child.
+           except OSError, e:
+              raise Exception, "%s [%d]" % (e.strerror, e.errno)
+    
+           if (pid == 0):    # The second child.
+              os.chdir('/')
+              os.umask(0)
+           else:
+              sys.exit(0)    # Exit parent (the first child) of the second child.
+        else:
+           sys.exit(0)       # Exit parent of the first child.
+    
     # Create logger
     log_format = '%(asctime)s DonkeySurvey %(levelname)s: %(message)s'
     log_level = logging.INFO
@@ -36,8 +62,10 @@ def main():
     formatter = logging.Formatter('%(levelname)s: %(message)s')
     # Tell the handler to use this format
     console.setFormatter(formatter)
-    # Add the handler to the root logger
-    logging.getLogger('').addHandler(console)
+
+    if cfg.background is not 1:
+        # Add the handler to the root logger
+        logging.getLogger('').addHandler(console)
 
     # Start mldonkey Connection Phase without pool mode
     # Connect and start listener thread

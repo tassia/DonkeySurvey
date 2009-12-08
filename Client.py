@@ -5,6 +5,7 @@ import socket
 import thread
 import struct
 import binascii
+import os
 
 from GUIProtoDefinitions import *
 from Listener import *
@@ -34,7 +35,7 @@ class Client(SocketCommon):
             break
         if s is None:
             logging.error("Could not open socket with mldonkey server: %d - %s", msg[0], msg[1])
-            sys.exit(-1)
+            os.abort()
 
         logging.info("Connected to mldonkey.")
 

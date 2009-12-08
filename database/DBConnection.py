@@ -1,4 +1,7 @@
 import MySQLdb
+import logging
+import sys
+import os
 
 class DBConnection:
 
@@ -35,8 +38,13 @@ class DBConnection:
         self.con = connection
 
     def connect(self):
-         self.con = MySQLdb.connect(self.host, self.user, self.password)
-         self.con.select_db(self.database)
+        try:
+            self.con = MySQLdb.connect(self.host, self.user, self.password)
+        except Exception, err:
+            logging.error("Failed to connect to database")
+            os.abort()
+
+        self.con.select_db(self.database)
 
     def getCursor(self):
         return self.con.cursor()

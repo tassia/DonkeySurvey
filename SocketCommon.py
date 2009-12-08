@@ -33,9 +33,9 @@ class SocketCommon():
         # TODO: Fix-me when password is invalid
         try:
             data = struct.unpack('<l', self.connection.recv(SIZE_LEN))[0]
-        except socket.error, msg:
+        except Exception, msg:
             data = None
-            #logging.exception("%s: %s", socket.error, str(msg))
+            #logging.exception("%s: %s", Exception, str(msg))
         return data
 
     def read_opcode(self):
