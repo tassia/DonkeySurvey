@@ -14,7 +14,7 @@ class FileDAO(CommonDAO):
 
     def insert(self, file):
         try:
-	    query = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES('%s', %s, %s, '%s')" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName)
+	    query = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES('%s', %s, %s, \"%s\")" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName)
             logging.debug(query)
             self.cursor.execute(query)
             last = CommonDAO.lastID(self, self.tablename)
@@ -32,7 +32,7 @@ class FileDAO(CommonDAO):
 		    self.cursor.execute(queryUpdate) 
                 return f.id
             else:
-	        queryInsert = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES('%s', %s, %s, '%s')" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName)
+	        queryInsert = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES('%s', %s, %s, \"%s\")" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName)
 		logging.debug(queryInsert)
 		self.cursor.execute(queryInsert)
                 last = CommonDAO.lastID(self, self.tablename)
