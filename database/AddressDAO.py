@@ -14,16 +14,20 @@ class AddressDAO(CommonDAO):
     
     def insertOrUpdate(self, address):
         add = self.findByIpPort(address.ip, address.port)
-        if add is not None:
-            queryUpdate = "UPDATE %s SET ip = '%s', port = %s WHERE id = %s" % (self.tablename, add.ip, add.port, add.id)
-            self.cursor.execute(queryUpdate)
-            return add.id
-        else:
-	    queryInsert = "INSERT INTO %s(ip, port) VALUES('%s', %s)" % (self.tablename, address.ip, address.port)
-            logging.debug(queryInsert)
-            self.cursor.execute(queryInsert)
-            last = CommonDAO.lastID(self, self.tablename)
-            return last
+        try:
+            if add is not None:
+                queryUpdate = "UPDATE %s SET ip = '%s', port = %s WHERE id = %s" % (self.tablename, add.ip, add.port, add.id)
+                self.cursor.execute(queryUpdate)
+                return add.id
+            else:
+	        queryInsert = "INSERT INTO %s(ip, port) VALUES('%s', %s)" % (self.tablename, address.ip, address.port)
+                logging.debug(queryInsert)
+                self.cursor.execute(queryInsert)
+                last = CommonDAO.lastID(self, self.tablename)
+                return last
+        except Exception, err:
+            sys.stderr.write('ERROR: %s\n' % std(err))
+            return None
 
     def delete(self, id):
 	query = "DELETE FROM %s WHERE id = %s" % (self.tablename, id)

@@ -14,7 +14,7 @@ class AddressHasFileDAO(CommonDAO):
     def insert(self, addressId, fileId):
         try:
             rs = self.findByAddressFile(addressId, fileId)
-            if not rs:
+            if rs is None:
                 firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	        query = "INSERT INTO %s(address_id, file_id, first_seen) VALUES(%s, %s,'%s')" % (self.jointable, addressId, fileId, firstSeen)
                 logging.debug(query)
