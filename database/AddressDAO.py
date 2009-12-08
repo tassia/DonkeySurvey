@@ -15,7 +15,7 @@ class AddressDAO(CommonDAO):
     def insertOrUpdate(self, address):
         add = self.findByIpPort(address.ip, address.port)
         if add is not None:
-            queryUpdate = "UPDATE %s SET ip = '%s', port = %s" % (self.tablename, add.ip, add.port)
+            queryUpdate = "UPDATE %s SET ip = '%s', port = %s WHERE id = %s" % (self.tablename, add.ip, add.port, add.id)
             self.cursor.execute(queryUpdate)
             return add.id
         else:
