@@ -13,7 +13,7 @@ class AddressHasFileDAO(CommonDAO):
     
     def insert(self, addressId, fileId):
         try:
-            rs = self.sourceHasFile(addressId, fileId)
+            rs = self.findByAddressFile(addressId, fileId)
             if not rs:
                 firstSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	        query = "INSERT INTO %s(address_id, file_id, first_seen) VALUES(%d, \
@@ -32,7 +32,7 @@ class AddressHasFileDAO(CommonDAO):
 	query = "DELETE FROM %s WHERE address_id = %s AND file_id = %s" % (self.jointable, addressId, fileId)
 	self.cursor.execute(query)
 
-    def sourceHasFile(self, addressId, fileId):
+    def findByAddressFile(self, addressId, fileId):
 	query = "SELECT * FROM %s WHERE address_id = %s AND file_id = %s" % (self.jointable, addressId, fileId) 
         self.cursor.execute(query)
         rs = self.cursor.fetchall()
