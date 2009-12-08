@@ -12,12 +12,16 @@ from SocketCommon import SocketCommon
 sys.path.append('./database')
 sys.path.append('./database/entities')
 
-from FileDAO import FileDAO
 from File import File
+from Source import Source
+from Filename import Filename
+from FileDAO import FileDAO
 from FilenameDAO import FilenameDAO
 from FileHasFilenameDAO import FileHasFilenameDAO
 from SessionDAO import SessionDAO
-from Filename import Filename
+from AddressDAO import AddressDAO
+from SourceDAO import SourceDAO
+#from SourceHasFileDAO import SourceHasFileDAO
 
 class MessageHandler:
 
@@ -45,7 +49,9 @@ class MessageHandler:
         # Message: FileUpdateAvailability
         # Action: update file availability for this source
         elif self.msg.opcode is 9:
-            self.msg.decode_msg_9(self.msg.raw_data)
+            file_id, source_id, availability = self.msg.decode_msg_9(self.msg.raw_data)
+            #shfdao = SourceHasFileDAO()
+            #shfdao.insertOrUpdate(file_id, source_id, availability)
 
         # Message: FileAddSource
         # Action: none
@@ -57,9 +63,25 @@ class MessageHandler:
         # Action: update and persist session on database
         elif self.msg.opcode is 15:
             session = self.msg.decode_msg_15(self.msg.raw_data)
-            if session:
+            if session and (session.source.id in self.source_id_hash):
                 sdao = SessionDAO()
-                sessionId = sdao.insert(session)
+                adao = AddressDAO()
+                session.address.id = adao.insertOrUpdate(session.address)
+                for file in iter(self.file_sources):
+                    if session.source.id in self.file_sources[file]:
+                        session.file.id = file_id_hash[file]
+                        #TODO: consider more than one session with the same source
+                # updating source.id to real one 
+                source = Source()
+                logging.debug(self.source_id_hash)
+                session.source.id = source.findByHash(self.source_id_hash[session.source.id])
+                logging.debug("*******Sourcehash: %s",self.source_id_hash[session.source.id])
+                logging.debug("*******SourceID: %s",session.source.id)
+                #print source.name,source.hash,source.software,source.osinfo
+                sessionId = sdao.insertOrUpdate(session)
+                    
+                if sessionID is None:
+                    logging.debug("SessionId is null")
 
         # Message: ClientState
         # Action: none
@@ -69,16 +91,26 @@ class MessageHandler:
         # Message: ConsoleMessage
         # Action: handle wanted info (commands 'vd' and 'vc')
         elif self.msg.opcode is 19:
-            cmd, arg, result_list = self.msg.decode_msg_19(self.msg.raw_data)
+            cmd, arg, result = self.msg.decode_msg_19(self.msg.raw_data)
             if cmd == "vd":
-                self.file_sources[arg] = result_list
-                for s in result_list:
-                    cmd = "vc %d" % (s)
-                    self.listener.send_cmd(cmd)
+                # cmd = 'vd', arg = file_id, result = file_sources
+                self.file_sources[arg] = result
                 logging.debug("###############################################")
                 logging.debug(self.file_sources)
-#            if cmd == "vc":
- #               source_id_hash[source_id]=source.hash
+                for s in result:
+                    cmd = "vc %d" % (s)
+                    self.listener.send_cmd(cmd)
+            if cmd == "vc" and result:
+                # cmd = 'vc', arg = source_id, result = source
+                source = result
+                if source.hash != "00000000000000000000000000000000":
+                    self.source_id_hash[arg]=source.hash
+                    logging.debug("###############################################")
+                    logging.debug(self.source_id_hash)
+                    sdao = SourceDAO()
+        	    sourceId = sdao.insert(source)
+                    if sourceId is None:
+    	                logging.debug("SourceId is null")
 
         # Message: NetworkInfo
         # Action: none
@@ -86,7 +118,7 @@ class MessageHandler:
             self.msg.decode_msg_20(self.msg.raw_data)
 
         # Message: UserInfo
-        # Action: never received such message
+        # Action: never received
         elif self.msg.opcode is 21:
             self.msg.decode_msg_21(self.msg.raw_data)
 
@@ -94,12 +126,16 @@ class MessageHandler:
         # Action: none
         elif self.msg.opcode is 26:
             server_id = self.msg.decode_msg_26(self.msg.raw_data)
-            self.listener.send('<lhl', [32, server_id])
+            #self.listener.send('<lhl', [32, server_id])
 
         # Message: FileDownloadUpdate
         # Action: update and persist session on database
         elif self.msg.opcode is 46:
-            self.msg.decode_msg_46(self.msg.raw_data)
+            file_id, size = self.msg.decode_msg_46(self.msg.raw_data)
+            file = FileDAO()
+            file.hash = self.file_id_hash[file_id]
+            file.partialSize = size
+            file.insertOrUpdate(file)
 
         # Message: SharedFileInfo
         # Action: none
@@ -129,6 +165,7 @@ class MessageHandler:
                 filename = Filename()
                 filename.name = v
                 filenameId = fnamedao.insertOrUpdate(filename)
+		# checar se = -1
                 if filenameId is None:
                     logging.debug("Filename is null")
                 fhasfnamedao.insertOrUpdate(fileId, filenameId); 

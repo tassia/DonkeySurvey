@@ -12,7 +12,7 @@ from DBConnection import *
 from Config import *
 from Client import *
 from Listener import *
-from MessageHandler import *
+from MessageHandler import MessageHandler
 
 def main():
     # Load config options from config file and command line args
