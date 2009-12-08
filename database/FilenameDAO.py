@@ -13,14 +13,14 @@ class FilenameDAO(CommonDAO):
         CommonDAO.__init__(self)
     
     def insert(self, filename):
-        query = "INSERT INTO %s(name) VALUES('%s')" % (self.tablename, filename.name)
+        query = "INSERT INTO %s(name) VALUES(\"%s\")" % (self.tablename, filename.name)
         logging.debug(query)
         self.cursor.execute(query)
         last = CommonDAO.lastID(self, self.tablename)
         return last
 
     def insertOrUpdate(self, filename):
-        query = "INSERT INTO %s (name) VALUES ('%s')" % (self.tablename, filename.name)
+        query = "INSERT INTO %s (name) VALUES (\"%s\")" % (self.tablename, filename.name)
         try:
             fname = self.findByName(filename.name)
             if fname is None:
@@ -50,7 +50,7 @@ class FilenameDAO(CommonDAO):
         return filename
 
     def findByName(self, name):
-        query = "SELECT * FROM %s WHERE name = '%s'" % (self.tablename, name)
+        query = "SELECT * FROM %s WHERE name = \"%s\"" % (self.tablename, name)
         self.cursor.execute(query)
         rs = self.cursor.fetchall()
         if not rs:
