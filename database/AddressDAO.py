@@ -45,6 +45,7 @@ class AddressDAO(CommonDAO):
 
     def findByIpPort(self, ip, port):
 	query = "SELECT * FROM %s WHERE ip = '%s' AND port = %s" % (self.tablename, ip, port)
+        logging.debug(query)
 	self.cursor.execute(query) 
         rs = self.cursor.fetchall()
         if not rs:
