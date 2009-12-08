@@ -29,6 +29,20 @@ class AddressDAO(CommonDAO):
 	query = "DELETE FROM %s WHERE id = %s" % (self.tablename, id)
 	self.cursor.execute(query)
 
+    def find(self, id):
+	query = "SELECT * FROM %s WHERE id = %s" % (self.tablename, id)
+       	self.cursor.execute(query) 
+        rs = self.cursor.fetchall()
+        if not rs:
+            return None
+        address = Address()
+        for row in rs:
+            address.id = row[0]
+            address.ip = row[1]
+            address.port = row[2]
+        return address 
+
+
     def findByIpPort(self, ip, port):
 	query = "SELECT * FROM %s WHERE ip = '%s' AND port = %s" % (self.tablename, ip, port)
 	self.cursor.execute(query) 
