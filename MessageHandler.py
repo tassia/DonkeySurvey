@@ -18,16 +18,17 @@ from Filename import Filename
 from FileDAO import FileDAO
 from FilenameDAO import FilenameDAO
 from FileHasFilenameDAO import FileHasFilenameDAO
+from AddressHasFileDAO import AddressHasFileDAO
+from SourceHasFileDAO import SourceHasFileDAO
 from SessionDAO import SessionDAO
 from AddressDAO import AddressDAO
 from SourceDAO import SourceDAO
-#from SourceHasFileDAO import SourceHasFileDAO
 
 class MessageHandler:
 
     def __init__(self, listener):
         self.listener = listener
-        # Dicts to save id-hash values for active files and sources 
+        # Id-hash values for active files and sources 
         self.file_id_hash = dict()
         self.source_id_hash = dict()
         self.file_sources = dict()
@@ -48,10 +49,10 @@ class MessageHandler:
 
         # Message: FileUpdateAvailability
         # Action: update file availability for this source
-        elif self.msg.opcode is 9:
-            file_id, source_id, availability = self.msg.decode_msg_9(self.msg.raw_data)
-            #shfdao = SourceHasFileDAO()
-            #shfdao.insertOrUpdate(file_id, source_id, availability)
+        #elif self.msg.opcode is 9:
+         #   file_id, source_id, availability = self.msg.decode_msg_9(self.msg.raw_data)
+          #  shfdao = SourceHasFileDAO()
+           # shfdao.insertOrUpdate(file_id, source_id, availability)
 
         # Message: FileAddSource
         # Action: none
@@ -80,7 +81,7 @@ class MessageHandler:
                 session.source.id = source.findByHash(self.source_id_hash[session.source.id])
                 logging.debug("*******Sourcehash: %s",self.source_id_hash[session.source.id])
                 logging.debug("*******SourceID: %s",session.source.id)
-                #print source.name,source.hash,source.software,source.osinfo
+                #logging.debug(source.name,source.hash,source.software,source.osinfo)
                 sessionId = sdao.insertOrUpdate(session)
                     
                 if sessionID is None:
@@ -94,29 +95,51 @@ class MessageHandler:
         # Message: ConsoleMessage
         # Action: handle wanted info (commands 'vd' and 'vc')
         elif self.msg.opcode is 19:
-            cmd, arg, result = self.msg.decode_msg_19(self.msg.raw_data)
+            cmd, id, result = self.msg.decode_msg_19(self.msg.raw_data)
             if cmd == "vd":
-                # cmd = 'vd', arg = file_id, result = file_sources
-                self.file_sources[arg] = result
+                # cmd = 'vd', id = file_id, result = file_sources
+                self.file_sources[id] = result
                 logging.debug("###############################################")
                 logging.debug(self.file_sources)
                 for s in result:
                     cmd = "vc %d" % (s)
                     self.listener.send_cmd(cmd)
             if cmd == "vc" and result:
-                # cmd = 'vc', arg = source_id, result = source
+                # cmd = 'vc', id = source_id, result = source
                 source = result[0]
                 address = result[1]
                 if source.hash == "00000000000000000000000000000000":
                     logging.debug("****** IP-no-hash: %s",address.ip)
+                    adao = AddressDAO()
+                    addressId = adao.insertOrUpdate(address)
+                    ahf = AddressHasFileDAO()
+                    f = FileDAO()
+                    for file in self.file_sources:
+                        if int(id) in self.file_sources[file]:
+                            if int(file) in self.file_id_hash:
+                                file_hash = self.file_id_hash[int(file)]
+                                logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (file_hash, f.findByHash(file_hash).id,addressId))
+                                ahf.insert(addressId, f.findByHash(file_hash).id)
                 else:
-                    self.source_id_hash[arg]=source.hash
+                    self.source_id_hash[id]=source.hash
                     logging.debug("###############################################")
                     logging.debug(self.source_id_hash)
                     sdao = SourceDAO()
         	    sourceId = sdao.insert(source)
                     if sourceId is None:
     	                logging.debug("SourceId is null")
+                    shf = SourceHasFileDAO()
+                    f = FileDAO()
+                    logging.debug(self.file_sources)
+                    for file in self.file_sources:
+                        logging.debug(self.file_sources[file])
+                        logging.debug("##########ID: %s",id)
+                        if int(id) in self.file_sources[file]:
+                            logging.debug(self.file_id_hash)
+                            if int(file) in self.file_id_hash:
+                                file_hash = self.file_id_hash[int(file)]
+                                logging.debug("F-HASH: %s, F-ID: %s, SRC-ID: %s" % (file_hash, f.findByHash(file_hash).id,sourceId))
+                                shf.insertOrUpdate(sourceId, f.findByHash(file_hash).id, "0")
 
         # Message: NetworkInfo
         # Action: none

@@ -195,7 +195,7 @@ class Message():
                     m = re.compile("^  \[( +?\d+)\]", re.M)
                     result =  m.findall(sources)
                     b = [int(x) for x in result]
-                    logging.debug(b)
+                    #logging.debug(b)
                 except Exception, err:
                     return None, None, None
                 return cmd, arg, b
@@ -207,7 +207,7 @@ class Message():
                     m = re.compile(regex)
                     result = re.split("\(|\)| '|'| ", m.findall(msg)[0])
                     result2 = re.split("\(|\)| '|'| |:", m.findall(msg)[0])
-                    logging.debug(result2)
+                    #logging.debug(result2)
                 except Exception, err:
                     return None, None, None
 
@@ -228,7 +228,8 @@ class Message():
                 source.so = osinfo[1]
                 address.ip = result2[3]
                 address.port = result2[4]
-                logging.debug("%s, %s, %s, %s", source.name, source.hash, source.software, source.so)
+                #logging.debug("%s, %s, %s, %s", source.name, source.hash, source.software, source.so)
+                #logging.debug("%s, %s", address.ip, address.port)
                 return cmd, arg, (source, address)
         return None, None, None
 
@@ -249,7 +250,7 @@ class Message():
         connected_servers = self.decode_int("l", raw_data, offset)
         offset += 4
         #logging.debug("NetworkID: %d | NetworkName: %s | Enable: %d | NetworkConfigFile: %s | Down: %d | Up: %d | ConnServers: %d ", 
-                      #network_id, network_name, enable, network_config_file, bytes_downloaded, bytes_uploaded, connected_servers)
+        #network_id, network_name, enable, network_config_file, bytes_downloaded, bytes_uploaded, connected_servers)
         tags_len = self.decode_int("h", raw_data, offset)
         offset += 2
         #logging.debug("--- NetworkFlags: %d", tags_len)
