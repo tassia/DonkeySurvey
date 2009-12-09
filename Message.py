@@ -9,11 +9,11 @@ import re
 sys.path.append('./database')
 sys.path.append('./database/entities')
 
-from File import File
-from Address import Address
-from Session import Session
-from Source import Source
-from datetime import datetime, date, time
+from File import *
+from Address import *
+from Session import *
+from Source import *
+from datetime import *
 
 class Message():
 
@@ -60,9 +60,13 @@ class Message():
         client_number = self.decode_int("l", raw_data, 4) 
         avail_len = self.decode_int("h", raw_data, 8)
         availability = self.decode_string(raw_data, 8)
-        logging.debug("FileNumber: %d | ClientNumber: %d | Availability_len: %d | Availability: %s ", file_number, client_number, avail_len, availability)
-        logging.debug("%s, %s, %s", file_number, client_number, float(availability.count('1')) / len(availability))
-        return file_number, client_number,  float(availability.count('1')) / len(availability)
+        logging.debug(('FileNumber: %d | ClientNumber: %d | '
+                       'Availability_len: %d | Availability: %s "'),
+                       file_number, client_number, avail_len, availability)
+        logging.debug("%s, %s, %s", file_number, client_number, 
+                      float(availability.count('1')) / len(availability))
+        return file_number, client_number, \
+               float(availability.count('1')) / len(availability)
 
     # FileAddSource
     def decode_msg_10(self, raw_data):
@@ -78,21 +82,29 @@ class Message():
         client_id = self.decode_int("l", raw_data, 0)
         client_netid = self.decode_int("l", raw_data, 4)
         client_type = self.decode_int("b", raw_data, 8)
-        logging.debug("ClientID: %d | CLientNetworkID: %d | ClientType: %d ", client_id, client_netid, client_type)
+        logging.debug("ClientID: %d | CLientNetworkID: %d | ClientType: %d ", 
+                      client_id, client_netid, client_type)
         offset = 9
         if client_type is 1:
             client_name_len = self.decode_int("h", raw_data, offset)
             client_name = self.decode_string(raw_data, offset)
-            client_hash = struct.unpack_from("<17s", raw_data, 11 + client_name_len)
-            logging.debug("--- ClientName: %s (%d) | ClientHash: %s", client_name, client_name_len, str.upper(binascii.hexlify("".join(client_hash))))
+            client_hash = struct.unpack_from("<17s", raw_data, 
+                                             11 + client_name_len)
+
+            logging.debug("--- ClientName: %s (%d) | ClientHash: %s",
+                          client_name, client_name_len, 
+                          str.upper(binascii.hexlify("".join(client_hash))))
+
             offset = 28 + client_name_len;
+
         ip0 = self.decode_int("B", raw_data, offset)
         ip1 = self.decode_int("B", raw_data, offset+1)
         ip2 = self.decode_int("B", raw_data, offset+2)
         ip3 = self.decode_int("B", raw_data, offset+3)
         geoip = self.decode_int("B", raw_data, offset + 4)
         port = self.decode_int("H", raw_data, offset + 5)
-        logging.debug("--- IP: %d.%d.%d.%d | geoip: %d | Port: %d ", ip0, ip1, ip2, ip3, geoip, port)
+        logging.debug("--- IP: %d.%d.%d.%d | geoip: %d | Port: %d ", ip0, ip1, 
+                      ip2, ip3, geoip, port)
         offset += 7
         connection_state = self.decode_int("B", raw_data, offset)
         offset += 1
@@ -127,6 +139,7 @@ class Message():
                 tag_value = self.decode_int("b", raw_data, offset)
                 offset += 1
             logging.debug("--- Tag %d -> %s = %s", i, tag_name, str(tag_value))
+
         client_name_len = self.decode_int("h", raw_data, offset)
         client_name = self.decode_string(raw_data,offset)
         offset += 2 + client_name_len
@@ -161,7 +174,14 @@ class Message():
         sui_verified = self.decode_int("b", raw_data, offset)
         logging.debug("--- SuiVerified: %d", sui_verified)
 	if downloaded is not 0 or uploaded is not 0:
-	    logging.debug("ClientID: %d | ClientName: %s | ClientIP: %d.%d.%d.%d | ClientPort: %d | ClientSoftware: %s | ConnectionState: %d | FileName: %s | Down: %d | Up: %d ", client_id, client_name, ip0, ip1, ip2, ip3, port, client_software, connection_state, upload_filename, downloaded, uploaded)
+	    logging.debug(('ClientID: %d | ClientName: %s | '
+                           'ClientIP: %d.%d.%d.%d | ClientPort: %d | '
+                           'ClientSoftware: %s | ConnectionState: %d | '
+                           'FileName: %s | Down: %d | Up: %d '), 
+                           client_id, client_name, ip0, ip1, ip2, ip3, 
+                           port, client_software, connection_state, 
+                           upload_filename, downloaded, uploaded)
+
         session.address.ip = "%d.%d.%d.%d" % (ip0, ip1, ip2, ip3)
         session.address.port = port 
         session.downloaded = downloaded
@@ -173,7 +193,8 @@ class Message():
     def decode_msg_16(self, raw_data):
         client_id = self.decode_int("l", raw_data, 0) 
         connection_state = self.decode_int("b", raw_data, 4) 
-        #logging.debug("ClientID: %d | ConnectionState: %d ", client_id, connection_state)
+        #logging.debug("ClientID: %d | ConnectionState: %d ", 
+        #               client_id, connection_state)
         if str(connection_state) in ("3", "5", "9"):
             rank = self.decode_int("l", raw_data, 5) 
             logging.debug("--- Rank: %d ", rank)
@@ -219,13 +240,15 @@ class Message():
                     osinfo = re.split(" ", m.findall(msg)[0])
                 except Exception, err:
                     osinfo = ['','']
+                logging.debug("RESULT: %s | MSG: %s", result, msg)
                 source.name = result[9] 
                 source.hash = md4[1]
                 source.software = "%s %s" % (result[6], result[7])
                 source.so = osinfo[1]
                 address.ip = result2[3]
                 address.port = result2[4]
-                #logging.debug("%s, %s, %s, %s", source.name, source.hash, source.software, source.so)
+                #logging.debug("%s, %s, %s, %s", source.name, source.hash, 
+                #              source.software, source.so)
                 #logging.debug("%s, %s", address.ip, address.port)
                 return cmd, arg, (source, address)
         return None, None, None
@@ -246,8 +269,12 @@ class Message():
         offset += 8
         connected_servers = self.decode_int("l", raw_data, offset)
         offset += 4
-        #logging.debug("NetworkID: %d | NetworkName: %s | Enable: %d | NetworkConfigFile: %s | Down: %d | Up: %d | ConnServers: %d ", 
-        #network_id, network_name, enable, network_config_file, bytes_downloaded, bytes_uploaded, connected_servers)
+        #logging.debug(('NetworkID: %d | NetworkName: %s | Enable: %d | '
+        #               'NetworkConfigFile: %s | Down: %d | Up: %d | '
+        #               'ConnServers: %d '), network_id, network_name, 
+        #                enable, network_config_file, bytes_downloaded, 
+        #                bytes_uploaded, connected_servers)
+
         tags_len = self.decode_int("h", raw_data, offset)
         offset += 2
         #logging.debug("--- NetworkFlags: %d", tags_len)
@@ -267,7 +294,10 @@ class Message():
         offset += 2 + user_name_len
         user_addr_type = self.decode_int("b", raw_data, offset)
         offset += 1
-        logging.debug("UserID: %d | UserMD4: %s | UserName: %s | UserAddrType: %d", user_id,  str.upper(binascii.hexlify("".join(user_md4))), user_name, user_addr_type)
+        logging.debug(('UserID: %d | UserMD4: %s | UserName: %s | '
+                       'UserAddrType: %d'), user_id,
+                      str.upper(binascii.hexlify("".join(user_md4))),
+                      user_name, user_addr_type)
         if user_addr_type is 0:
             user_ip = self.decode_int("l", raw_data, offset)
             offset += 4
@@ -278,7 +308,8 @@ class Message():
             user_name_addr_len = self.decode_int("h", raw_data, offset)
             user_name_addr = self.decode_string(raw_data, offset)
             offset += 2 + user_name_addr_len
-            logging.debug("--- UserGEOIP: %d | UserNameAddr: %s", user_geoip, user_name_addr)
+            logging.debug("--- UserGEOIP: %d | UserNameAddr: %s", 
+                          user_geoip, user_name_addr)
         blocked = self.decode_int("b", raw_data, offset)
         offset += 1
         logging.debug("--- Blocked: %d ", blocked)
@@ -296,7 +327,9 @@ class Message():
         rate_len = self.decode_int("h", raw_data, 12)
         download_rate = self.decode_string(raw_data, 12)
         last_seen = self.decode_int("l", raw_data, 14 + rate_len)
-        #logging.debug("FileID: %d | Downloaded: %d | Download_rate: %s | Seconds since last seen: %d ", file_id, downloaded_size, download_rate, last_seen)
+        #logging.debug(('FileID: %d | Downloaded: %d | Download_rate: %s | '
+        #               'Seconds since last seen: %d '), file_id, 
+        #               downloaded_size, download_rate, last_seen)
         return file_id, downloaded_size
 
     # SharedFileInfo
