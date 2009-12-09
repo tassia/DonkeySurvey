@@ -50,7 +50,7 @@ class SocketCommon():
     def read_data(self, length):
         try:
             data = self.connection.recv(length)
-        except socket.error, msg:
+        except Exception, msg:
             data = None
             #logging.exception("%s: %s", socket.error, str(msg))
         return data
