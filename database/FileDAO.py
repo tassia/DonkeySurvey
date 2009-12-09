@@ -35,7 +35,7 @@ class FileDAO(CommonDAO):
 	        queryInsert = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES('%s', %s, %s, \"%s\")" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName)
 		logging.debug(queryInsert)
 		self.cursor.execute(queryInsert)
-                last = self.lastID(self, self.tablename)
+                last = self.lastID(self.tablename)
                 return last
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
