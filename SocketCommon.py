@@ -7,7 +7,6 @@ import logging
 from GUIProtoDefinitions import *
 from Config import *
 from Message import *
-
 from Constants import *
 
 class SocketCommon():
@@ -15,11 +14,13 @@ class SocketCommon():
         login_l=len(login)
         password_l=len(password)
         format = "<l h h %ds h %ds" % (password_l, login_l)
-        self.send(format, [OPCODE("PassWord"), password_l, password, login_l, login])
+        self.send(format, [OPCODE("PassWord"), password_l, 
+                  password, login_l, login])
 
     def send(self, format, data):
         length = struct.calcsize(format)-SIZE_LEN
-        logging.debug("SEND %d bytes | Opcode = %d (%s)", length, data[0], OPCODE_SENT[str(data[0])])
+        logging.debug("SEND %d bytes | Opcode = %d (%s)", 
+                      length, data[0], OPCODE_SENT[str(data[0])])
         data = struct.pack(format, length, *data)
         self.connection.send(data)
  
@@ -62,7 +63,8 @@ class SocketCommon():
             #logging.debug("=================OPCODE = %s", opcode)
             msg = Message(opcode, raw_data, self.config, length)
             try:
-                logging.debug("RECV %d bytes | Opcode = %d (%s)", length, opcode, OPCODE_RECV[str(opcode)])
+                logging.debug("RECV %d bytes | Opcode = %d (%s)", 
+                              length, opcode, OPCODE_RECV[str(opcode)])
             except Exception, err:
                 return msg    
             return msg

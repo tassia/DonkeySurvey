@@ -17,8 +17,8 @@ class Client(SocketCommon):
         self.config = config
 
     def connect(self):
-        for res in socket.getaddrinfo(self.config.hostname, self.config.port, socket.AF_UNSPEC,
-                                      socket.SOCK_STREAM):
+        for res in socket.getaddrinfo(self.config.hostname, self.config.port,
+                                      socket.AF_UNSPEC, socket.SOCK_STREAM):
             af, socktype, proto, canonname, sa = res
             try:
                 s = socket.socket(af, socktype, proto)
@@ -34,7 +34,8 @@ class Client(SocketCommon):
                 continue
             break
         if s is None:
-            logging.error("Could not open socket with mldonkey server: %d - %s", msg[0], msg[1])
+            logging.error("Could not open socket with mldonkey server: %d - %s",
+                          msg[0], msg[1])
             os.abort()
 
         logging.info("Connected to mldonkey.")

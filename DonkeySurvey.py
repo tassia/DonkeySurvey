@@ -14,7 +14,7 @@ from DBConnection import *
 from Config import *
 from Client import *
 from Listener import *
-from MessageHandler import MessageHandler
+from MessageHandler import *
 
 def main():
     # Load config options from config file and command line args
@@ -29,21 +29,21 @@ def main():
         except OSError, e:
            raise Exception, "%s [%d]" % (e.strerror, e.errno)
     
-        if (pid == 0):       # The first child.
+        if (pid == 0):    # The first child.
            os.setsid()
     
            try:
-              pid = os.fork()        # Fork a second child.
+              pid = os.fork() # Fork a second child.
            except OSError, e:
               raise Exception, "%s [%d]" % (e.strerror, e.errno)
     
-           if (pid == 0):    # The second child.
+           if (pid == 0):     # The second child.
               os.chdir('/')
               os.umask(0)
            else:
-              sys.exit(0)    # Exit parent (the first child) of the second child.
+              sys.exit(0) # Exit parent (the first child) of the second child.
         else:
-           sys.exit(0)       # Exit parent of the first child.
+           sys.exit(0)    # Exit parent of the first child.
     
     # Create logger
     log_format = '%(asctime)s DonkeySurvey %(levelname)s: %(message)s'
@@ -51,15 +51,17 @@ def main():
     if cfg.debug is 1:
         log_level = logging.DEBUG
 
-    logging.basicConfig(level=log_level, 
-                        format=log_format, 
+    logging.basicConfig(level=log_level, format=log_format, 
                         filename=cfg.output_filename)
+
     # Define a Handler which writes "log_level" messages or 
     # higher to the sys.stdout
     console = logging.StreamHandler(sys.stdout)
     console.setLevel(log_level)
+
     # Set a format which is simpler for console use
     formatter = logging.Formatter('%(levelname)s: %(message)s')
+
     # Tell the handler to use this format
     console.setFormatter(formatter)
 

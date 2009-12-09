@@ -6,8 +6,8 @@ import socket
 import logging
 
 from GUIProtoDefinitions import *
-from Message import Message
-from SocketCommon import SocketCommon
+from Message import *
+from SocketCommon import *
 
 class Listener(SocketCommon):
     def __init__(self, name, connection, config):

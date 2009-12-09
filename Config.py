@@ -26,21 +26,30 @@ class Config():
        print "Syntax error"
        print " [ general ]"
        print "  -h, --help           This help"
-       print "  -b, --background     Set daemon mode, runing in background (Default is foreground)"
+       print "  -b, --background     Set daemon mode, runing in background"
+       print "                       (Default is foreground)"
        print "  -d, --debug          Set debug to true. Default is false."
-       print "  -o, --output=FILE    Dump all output in FILE. (Default is Stdout)"
+       print "  -o, --output=FILE    Dump all output in FILE. "
+       print "                       (Default is Stdout)"
        print ""
        print " [ mldonkey ]"
-       print "  -H, --host=HOST      Host name to connect. (Default is 127.0.0.1)"
+       print "  -H, --host=HOST      Host name to connect."
+       print "                       (Default is 127.0.0.1)"
        print "  -p, --port=PORT      Port to connect. (Default is 4001)"
-       print "  -U, --user=USER      User for authentication. (Default is admin)"
-       print "  -P, --pass=PASS      Password for authentication. (Default is empty)"
+       print "  -U, --user=USER      User for authentication."
+       print "                       (Default is admin)"
+       print "  -P, --pass=PASS      Password for authentication."
+       print "                       (Default is empty)"
        print ""
        print " [ database ]"
-       print "  -D, --dbhost=HOST    Host name for database connection. (Default is 127.0.0.1)"
-       print "  -N, --dbname=DBNAME  Database name for store data. (Default is donkeysurvey)"
-       print "  -u, --dbuser=DBUSER  Database username for store data. (Default is donkeysurvey)"
-       print "  -w, --dbpass=DBPASS  Database password for store data. (Default is donkeysurvey)"
+       print "  -D, --dbhost=HOST    Host name for database connection."
+       print "                       (Default is 127.0.0.1)"
+       print "  -N, --dbname=DBNAME  Database name for store data."
+       print "                       (Default is donkeysurvey)"
+       print "  -u, --dbuser=DBUSER  Database username for store data."
+       print "                       (Default is donkeysurvey)"
+       print "  -w, --dbpass=DBPASS  Database password for store data."
+       print "                       (Default is donkeysurvey)"
 
    def read_option(self, section, option):
        var = "self.%s" % option
@@ -58,7 +67,7 @@ class Config():
            logging.error("Error in config file syntax: %s", str(err))
            os.abort()
  
-       self.debug = self.read_option('general', 'background')
+       self.background = self.read_option('general', 'background')
        self.debug = self.read_option('general', 'debug')
        self.output_filename = self.read_option('general', 'output_filename')
 
@@ -73,19 +82,21 @@ class Config():
        self.dbpass = self.read_option('database', 'dbpass')
 
        short_options = "hbdo:H:p:U:P:D:N:u:w:"
-       long_options = ["help", "background", "debug", "output=", "host=", 
-                       "port=", "user=", "pass=", "dbhost=", "dbname=", "dbuser=", "dbpass="]
+       long_options = ["help", "background", "debug", "output=", 
+                       "host=", "port=", "user=", "pass=", 
+                       "dbhost=", "dbname=", "dbuser=", "dbpass="]
        try:
-           opts, args = getopt.getopt(sys.argv[1:], short_options, long_options)
+           opts, args = getopt.getopt(sys.argv[1:], short_options, 
+                                      long_options)
        except getopt.GetoptError, err:
            logging.error("Error parsing args: %s", str(err))
            self.usage()
-           os.abort()
+           sys.exit()
 
        for o, a in opts:
            if o in ("-h", "--help"):
                self.usage()
-               os.abort()
+               sys.exit()
            elif o in ("-b", "--background"):
                self.background = 1
            elif o in ("-d", "--debug"):
