@@ -12,13 +12,20 @@ class SourceDAO(CommonDAO):
     def __init__(self):
         CommonDAO.__init__(self)
 
-    def insert(self, source):
+    def insertOrUpdate(self, source):
         try:
-            query = "INSERT INTO %s (name, hash, software, osinfo) values('%s', '%s', '%s', '%s')" % (self.tablename, source.name, source.hash, source.software, source.osinfo)
-            logging.debug(query)
-            self.cursor.execute(query)
-            last = self.lastID(self.tablename)
-            return last
+            s = self.findByHash(source.hash)
+            if s is not None:
+                queryUpdate = "UPDATE %s SET osinfo = '%s' WHERE id = %s" % (self.tablename, source.osinfo, s.id)
+                logging.debug(queryUpdate)
+                self.cursor.execute(queryUpdate)
+                return s.id
+            else:
+                queryInsert = "INSERT INTO %s (name, hash, software, osinfo) values('%s', '%s', '%s', '%s')" % (self.tablename, source.name, source.hash, source.software, source.osinfo)
+                logging.debug(queryInsert)
+                self.cursor.execute(queryInsert)
+                last = self.lastID(self.tablename)
+                return last
         except Exception, err:
             sys.stderr.write('ERROR: %s\n' % str(err))
             return None  
