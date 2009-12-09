@@ -223,9 +223,10 @@ class Message():
                 regex = "Client %s:.*" % (arg)
                 try:
                     m = re.compile(regex)
-                    result = re.split("\(|\)| '|'| ", m.findall(msg)[0])
-                    result2 = re.split("\(|\)| '|'| |:", m.findall(msg)[0])
-                    #logging.debug(result2)
+                    result = re.split("\(|\)| '|'| ", 
+                                      m.findall(msg)[0])
+                    result2 = re.split("\(|\)| '|'| |:", 
+                                       m.findall(msg)[0])
                 except Exception, err:
                     return None, None, None
 
@@ -247,9 +248,6 @@ class Message():
                 source.so = osinfo[1]
                 address.ip = result2[3]
                 address.port = result2[4]
-                #logging.debug("%s, %s, %s, %s", source.name, source.hash, 
-                #              source.software, source.so)
-                #logging.debug("%s, %s", address.ip, address.port)
                 return cmd, arg, (source, address)
         return None, None, None
 
@@ -341,7 +339,9 @@ class Message():
         file_size = self.decode_int("q", raw_data, 10 + file_len) 
         uploaded = self.decode_int("q", raw_data, 18 + file_len) 
         requests = self.decode_int("l", raw_data, 26 + file_len) 
-        #logging.debug("FileID: %d | NetworkID: %d | FileName: %s | FileSize: %d | Uploaded: %d | Requests: %d ", file_id, netid, file, file_size, uploaded, requests)
+        #logging.debug(('FileID: %d | NetworkID: %d | FileName: %s | '
+        #               'FileSize: %d | Uploaded: %d | Requests: %d ',
+        #               file_id, netid, file, file_size, uploaded, requests)
         return file_id
 
     # FileRemoveSource
@@ -358,7 +358,8 @@ class Message():
         net_id = self.decode_int("l", raw_data, 4)
         pfile_names_len = self.decode_int("h", raw_data, 8)
 	offset = 10
-        logging.debug("FileID: %d | NetworkID: %d | Possible File Names: %d", file_id, net_id, pfile_names_len)
+        logging.debug("FileID: %d | NetworkID: %d | Possible File Names: %d",
+                      file_id, net_id, pfile_names_len)
         for i in range(pfile_names_len):
 	    file_name_len = self.decode_int("h", raw_data, offset)
 	    file_name = self.decode_string(raw_data, offset)
@@ -377,7 +378,10 @@ class Message():
 	offset += 4
 	file_state = self.decode_int("b", raw_data, offset)
 	offset += 1
-	logging.debug("--- FileMD4: %s | FileSize: %d | Sources: %d | Clients: %d | FileState: %d ", str.upper(binascii.hexlify("".join(file_md4))), file_size, sources, clients, file_state)
+	logging.debug(('--- FileMD4: %s | FileSize: %d | Sources: %d | '
+                       'Clients: %d | FileState: %d '), 
+                      str.upper(binascii.hexlify("".join(file_md4))), 
+                      file_size, sources, clients, file_state)
 	if file_state is 6:
 	    reason_len = self.decode_int("h", raw_data, offset)
 	    reason = self.decode_string(raw_data, offset)
@@ -396,7 +400,9 @@ class Message():
 	    source_chunks_len = self.decode_int("h", raw_data, offset)
 	    source_chunks = self.decode_string(raw_data, offset)
 	    offset += 2 + source_chunks_len
-	    logging.debug("--- NetworkNumber: %d | SourceChunksLen: %d | SourceChunks: %s ", network_number, source_chunks_len, source_chunks)
+	    logging.debug(('--- NetworkNumber: %d | SourceChunksLen: %d | '
+                           'SourceChunks: %s '), network_number, 
+                           source_chunks_len, source_chunks)
         float_len = self.decode_int("h", raw_data, offset)
 	offset += 2
 	format_float = "<%dc" % float_len
@@ -411,7 +417,10 @@ class Message():
 	    #logging.debug("--- ChunkAge: %d", chunk_age)
         file_age = self.decode_int("l", raw_data, offset)
 	offset += 4
-        logging.debug("--- FileID: %d | FileMD4 %s | FileSize: %d | DownloadState: %d", file_id, str.upper(binascii.hexlify("".join(file_md4))), file_size, file_state)
+        logging.debug(('--- FileID: %d | FileMD4 %s | FileSize: %d | '
+                       'DownloadState: %d'), file_id, 
+                       str.upper(binascii.hexlify("".join(file_md4))), 
+                       file_size, file_state)
         file_format = self.decode_int("b", raw_data, offset)
         offset += 1
         logging.debug("--- FileFormat: %d ", file_format)
@@ -435,7 +444,10 @@ class Message():
             offset += 4
             video_rate = self.decode_int("l", raw_data, offset)
             offset += 4
-	    logging.debug("--- VideoCodec: %s | VideoWidth %d | VideoHeight: %d | VideoFPS: %d | VideoRate: %d  ", video_codec, video_width, video_height, video_fps, video_rate)
+	    logging.debug(('--- VideoCodec: %s | VideoWidth %d | '
+                           'VideoHeight: %d | VideoFPS: %d | VideoRate: %d'), 
+                          video_codec, video_width, video_height, 
+                          video_fps, video_rate)
         if file_format is 3:
             mp3_title_len = self.decode_int("h", raw_data, offset)
             mp3_title = self.decode_string(raw_data, offset)
@@ -456,7 +468,10 @@ class Message():
             offset += 4
             mp3_genre = self.decode_int("l", raw_data, offset)
             offset += 4
-            logging.debug("--- Mp3Title: %s | Mp3Artist: %s |  Mp3Album: %s | Mp3Year: %s | Mp3Comment: %s | Mp3Track: %d | Mp3Genre: %d ", mp3_title, mp3_artist, mp3_album, mp3_year, mp3_comment, mp3_track, mp3_genre)
+            logging.debug(('--- Mp3Title: %s | Mp3Artist: %s |  Mp3Album: %s | '
+                           'Mp3Year: %s | Mp3Comment: %s | Mp3Track: %d | '
+                           'Mp3Genre: %d'), mp3_title, mp3_artist, mp3_album, 
+                           mp3_year, mp3_comment, mp3_track, mp3_genre)
         if file_format is 4:
             list_len = self.decode_int("h", raw_data, offset)
             offset += 2
@@ -487,24 +502,28 @@ class Message():
                     float_len = self.decode_int("h", raw_data, offset)
                     offset += 2
 	            format_float = "<%dc" % float_len
-	            tags[7] = struct.unpack_from(format_float, raw_data, offset)
+	            tags[7] = struct.unpack_from(format_float, raw_data, 
+                                                 offset)
 	            offset += float_len
                     tags[8] = self.decode_int("h", raw_data, offset)
                     offset += 2
                     float_len = self.decode_int("h", raw_data, offset)
                     offset += 2
 	            format_float = "<%dc" % float_len
-	            tags[9] = struct.unpack_from(format_float, raw_data, offset)
+	            tags[9] = struct.unpack_from(format_float, raw_data,
+                                                 offset)
 	            offset += float_len
                     float_len = self.decode_int("h", raw_data, offset)
                     offset += 2
 	            format_float = "<%dc" % float_len
-	            tags[10] = struct.unpack_from(format_float, raw_data, offset)
+	            tags[10] = struct.unpack_from(format_float, raw_data, 
+                                                  offset)
 	            offset += float_len
                     float_len = self.decode_int("h", raw_data, offset)
                     offset += 2
 	            format_float = "<%dc" % float_len
-	            tags[11] = struct.unpack_from(format_float, raw_data, offset)
+	            tags[11] = struct.unpack_from(format_float, raw_data,
+                                                  offset)
 	            offset += float_len
                     list_len = self.decode_int("h", raw_data, offset)
                     offset += 2
@@ -516,7 +535,8 @@ class Message():
                         float_len = self.decode_int("h", raw_data, offset)
                         offset += 2
                         format_float = "<%dc" % float_len
-                        list2 = struct.unpack_from(format_float, raw_data, offset)
+                        list2 = struct.unpack_from(format_float, raw_data, 
+                                                   offset)
                         offset += float_len
                     tags[13] = self.decode_int("h", raw_data, offset)
                     offset += 4
@@ -525,22 +545,26 @@ class Message():
                     float_len = self.decode_int("h", raw_data, offset)
                     offset += 2
                     format_float = "<%dc" % float_len
-                    tags[15] = struct.unpack_from(format_float, raw_data, offset)
+                    tags[15] = struct.unpack_from(format_float, raw_data,
+                                                  offset)
                     offset += float_len
 		    float_len = self.decode_int("h", raw_data, offset)
                     offset += 2
                     format_float = "<%dc" % float_len
-                    tags[16] = struct.unpack_from(format_float, raw_data, offset)
+                    tags[16] = struct.unpack_from(format_float, raw_data,
+                                                  offset)
                     offset += float_len
                     float_len = self.decode_int("h", raw_data, offset)
                     offset += 2
                     format_float = "<%dc" % float_len
-                    tags[17] = struct.unpack_from(format_float, raw_data, offset)
+                    tags[17] = struct.unpack_from(format_float, raw_data,
+                                                  offset)
                     offset += float_len
                     float_len = self.decode_int("h", raw_data, offset)
                     offset += 2
                     format_float = "<%dc" % float_len
-                    tags[18] = struct.unpack_from(format_float, raw_data, offset)
+                    tags[18] = struct.unpack_from(format_float, raw_data,
+                                                  offset)
                     offset += float_len
                     tags[19] = self.decode_int("b", raw_data, offset)
                     offset += 1
