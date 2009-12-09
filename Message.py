@@ -340,7 +340,7 @@ class Message():
         uploaded = self.decode_int("q", raw_data, 18 + file_len) 
         requests = self.decode_int("l", raw_data, 26 + file_len) 
         #logging.debug(('FileID: %d | NetworkID: %d | FileName: %s | '
-        #               'FileSize: %d | Uploaded: %d | Requests: %d ',
+        #               'FileSize: %d | Uploaded: %d | Requests: %d '),
         #               file_id, netid, file, file_size, uploaded, requests)
         return file_id
 
