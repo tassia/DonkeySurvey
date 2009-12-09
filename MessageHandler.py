@@ -73,32 +73,31 @@ class MessageHandler:
             source_id = str(session.source.id) #fake
             adao = AddressDAO()
             addressId = adao.insertOrUpdate(session.address)
-            #logging.debug(sourceId)
             logging.debug(self.source_id_hash)
             fileId = None
-            file_id = None
+            file_id = 0
+            logging.debug(self.file_sources)
+            logging.debug(self.file_id_hash)
             for file in self.file_sources:
+                logging.debug(source_id)
+                logging.debug(file)
                 if source_id in self.file_sources[file]:
                     file_id = int(file)
+                    logging.debug(file_id)
                     if file_id in self.file_id_hash:
                         fdao = FileDAO()
                         fileHash = self.file_id_hash[file_id] 
                         fileId = fdao.findByHash(fileHash).id
-                        #logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (file_hash, f.findByHash(file_hash).id,addressId))
-                    #TODO: consider more than one session with the same source
+                        logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (fileHash, fileId ,addressId))
+                        logging.debug("*****File id***: %d" % (file_id))
+                        #TODO: consider more than one session with the same source
 
-#            if session:
-#                if sourceId in self.source_id_hash:
-            if session is not None and file_id is not None:
+            logging.debug("*****File id: %d" % (file_id))
+            if session is not None and file_id != 0:
                 if source_id in self.source_id_hash:
                     session.address.id = addressId
                     session.file.id = fileId
-                    #logging.debug("*******SourceID: %s" % (session.source.id))
                     logging.debug(self.source_id_hash)
-                    # updating source.id to real one 
-                    #logging.debug("Session_File_ID = %s" % (session.file.id))
-                    #logging.debug("*******SourceID: %s" % (sourceId))
-                    #logging.debug(self.source_id_hash)
                     logging.debug("*******Sourcehash: %s" % (self.source_id_hash[source_id]))
                     srcdao = SourceDAO()
                     sourceHash = self.source_id_hash[source_id]
@@ -112,12 +111,6 @@ class MessageHandler:
 
                 else:
                     logging.debug("****** IP-no-hash: %s",addressId)
-                    #for file in self.file_sources:
-                    #    if source_id in self.file_sources[file]:
-                    #        file_id = int(file)
-                    #        if file_id in self.file_id_hash:
-                    #            file_hash = self.file_id_hash[int(file)]
-                    #            logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (file_hash, fdao.findByHash(file_hash).id,addressId))
                     if fileId is not None:
                         ahf = AddressHasFileDAO()
                         ahf.insert(addressId, fileId)
@@ -138,6 +131,7 @@ class MessageHandler:
                 logging.debug("###############################################")
                 logging.debug(self.file_sources)
                 for s in result:
+#                if s not in self.source_id_hash:
                     cmd = "vc %d" % (s)
                     self.listener.send_cmd(cmd)
             if cmd == "vc" and result:
