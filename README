@@ -3,8 +3,8 @@
 
 DonkeySurvey is a tool for collecting, storing and retrieving information about
 downloads and uploads on a edonkey network. It is fully implemented in Python
-and uses MySQL as database system. DonkeySurvey runs in parallel with a
-MlDonkey client, reading messages from this client through a socket in a
+and uses MySQL as database system. DonkeySurvey runs concurrently with a
+MlDonkey server, reading messages from this client through a socket in a
 assynchronous way. It processes those messages, querying the client for more
 information when necessary, and store them in a database.
 
