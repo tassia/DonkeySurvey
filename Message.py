@@ -248,14 +248,14 @@ class Message():
                 except Exception, err:
                     osinfo = ['','']
                 logging.debug("RESULT (VC): %s" % (result))
+                if result2[3] == "0.0.0.0":
+                    return None, None, None
                 source.name = result[9] 
                 source.hash = md4[1]
                 source.software = "%s %s" % (result[6], result[7])
                 source.so = osinfo[1]
                 address.ip = result2[3]
                 address.port = result2[4]
-                if source.ip == "0.0.0.0":
-                    return None, None, None
                 return cmd, int(arg), (source, address)
         return None, None, None
 
