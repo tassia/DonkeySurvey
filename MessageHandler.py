@@ -70,14 +70,15 @@ class MessageHandler:
         # Action: update and persist session on database
         elif self.msg.opcode is 15:
             session = self.msg.decode_msg_15(self.msg.raw_data)
-            source_id = str(session.source.id) #fake
+            source_id = session.source.id #fake
             adao = AddressDAO()
             addressId = adao.insertOrUpdate(session.address)
             logging.debug(self.source_id_hash)
             fileId = None
             file_id = 0
-            logging.debug(self.file_sources)
-            logging.debug(self.file_id_hash)
+            logging.debug("File-[Sources]: %s" % (self.file_sources))
+            logging.debug("File [id-hash]: %s" % (self.file_id_hash))
+            logging.debug("Source [id-hash]: %s" % (self.source_id_hash))
             for file in self.file_sources:
                 logging.debug(source_id)
                 logging.debug(file)
@@ -188,10 +189,11 @@ class MessageHandler:
         # Action: update and persist session on database
         elif self.msg.opcode is 46:
             file_id, size = self.msg.decode_msg_46(self.msg.raw_data)
-            file = FileDAO()
+            fdao = FileDAO()
+            file = File()
             file.hash = self.file_id_hash[file_id]
             file.partialSize = size
-            file.insertOrUpdate(file)
+            fdao.insertOrUpdate(file)
 
         # Message: SharedFileInfo
         # Action: none

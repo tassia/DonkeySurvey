@@ -218,7 +218,7 @@ class Message():
                     logging.debug("Sources RESULT (VD): %s" % (b))
                 except Exception, err:
                     return None, None, None
-                return cmd, arg, b
+                return cmd, int(arg), b
             if (cmd == "vc"):
                 source = Source()
                 address = Address()
@@ -250,7 +250,7 @@ class Message():
                 source.so = osinfo[1]
                 address.ip = result2[3]
                 address.port = result2[4]
-                return cmd, arg, (source, address)
+                return cmd, int(arg), (source, address)
         return None, None, None
 
     # NetworkInfo
