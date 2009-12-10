@@ -254,6 +254,8 @@ class Message():
                 source.so = osinfo[1]
                 address.ip = result2[3]
                 address.port = result2[4]
+                if source.ip == "0.0.0.0":
+                    return None, None, None
                 return cmd, int(arg), (source, address)
         return None, None, None
 

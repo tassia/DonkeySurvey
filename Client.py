@@ -53,7 +53,7 @@ class Client(SocketCommon):
         self.send_login(self.config.username,self.config.password)
 
         # Set connection non-blocking
-        self.connection.setblocking(0)
+        self.connection.setblocking(1)
         
         return s
 
