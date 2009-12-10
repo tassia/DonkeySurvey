@@ -12,3 +12,4 @@ class Session:
     source = Source()
     file = File()
     address = Address() 
+    kind = ''

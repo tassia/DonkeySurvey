@@ -34,9 +34,13 @@ class FileDAO(CommonDAO):
                     file.id = f.id
                     self.setFileNames(file)
                 if f.partialSize < file.partialSize:
-                    queryUpdate = "UPDATE %s SET partial_size = %s, best_name = \"%s\" WHERE id = %s" % (self.tablename, file.partialSize, file.bestName, f.id)
+                    queryUpdate = "UPDATE %s SET partial_size = %s WHERE id = %s" % (self.tablename, file.partialSize, f.id)
 		    logging.debug(queryUpdate)
 		    self.cursor.execute(queryUpdate)
+                if file.bestName:
+                    queryUpdate = "UPDATE %s SET best_name = \"%s\" WHERE id = %s" % (self.tablename, file.bestName, f.id)
+                    logging.debug(queryUpdate)
+                    self.cursor.execute(queryUpdate)
                 return f.id
             else:
 	        queryInsert = "INSERT INTO %s(hash, size, partial_size, best_name) VALUES('%s', %s, %s, \"%s\")" % (self.tablename, file.hash, file.size, file.partialSize, file.bestName)

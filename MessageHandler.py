@@ -73,38 +73,36 @@ class MessageHandler:
             source_id = session.source.id #fake
             adao = AddressDAO()
             addressId = adao.insertOrUpdate(session.address)
-            logging.debug(self.source_id_hash)
-            fileId = None
-            file_id = 0
             logging.debug("File-[Sources]: %s" % (self.file_sources))
             logging.debug("File [id-hash]: %s" % (self.file_id_hash))
             logging.debug("Source [id-hash]: %s" % (self.source_id_hash))
+            fileId = None
+            file_id = 0
             for file in self.file_sources:
-                logging.debug(source_id)
-                logging.debug(file)
+                #logging.debug(file)
                 if source_id in self.file_sources[file]:
                     file_id = int(file)
-                    logging.debug(file_id)
+                    #logging.debug(file_id)
                     if file_id in self.file_id_hash:
                         fdao = FileDAO()
                         fileHash = self.file_id_hash[file_id] 
                         fileId = fdao.findByHash(fileHash).id
-                        logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (fileHash, fileId ,addressId))
-                        logging.debug("*****File id***: %d" % (file_id))
+                        #logging.debug("F-HASH: %s, F-ID: %s, ADDR-ID: %s" % (fileHash, fileId ,addressId))
+                        #logging.debug("*****File id***: %d" % (file_id))
                         #TODO: consider more than one session with the same source
 
-            logging.debug("*****File id: %d" % (file_id))
-            if session is not None and file_id != 0:
+            #logging.debug("*****File id: %d" % (file_id))
+            if session and fileId:
                 if source_id in self.source_id_hash:
-                    session.address.id = addressId
-                    session.file.id = fileId
-                    logging.debug(self.source_id_hash)
-                    logging.debug("*******Sourcehash: %s" % (self.source_id_hash[source_id]))
+                    #logging.debug(self.source_id_hash)
+                    #logging.debug("*******Sourcehash: %s" % (self.source_id_hash[source_id]))
                     srcdao = SourceDAO()
                     sourceHash = self.source_id_hash[source_id]
                     session.source.id = srcdao.findByHash(sourceHash).id
+                    session.address.id = addressId
+                    session.file.id = fileId
                     logging.debug("Source %d, File %d: Uploaded(%d), Donwloaded(%d))" % (source_id, file_id, session.uploaded, session.downloaded))
-                    logging.debug(session.source.id)
+                    #logging.debug(session.source.id)
                     sdao = SessionDAO()
                     sessionId = sdao.insertOrUpdate(session)            
                     if sessionId is None:
@@ -112,9 +110,9 @@ class MessageHandler:
 
                 else:
                     logging.debug("****** IP-no-hash: %s",addressId)
-                    if fileId is not None:
-                        ahf = AddressHasFileDAO()
-                        ahf.insert(addressId, fileId)
+#                    if fileId:
+                    ahf = AddressHasFileDAO()
+                    ahf.insert(addressId, fileId)
 
 
         # Message: ClientState
@@ -126,17 +124,14 @@ class MessageHandler:
         # Action: handle wanted info (commands 'vd' and 'vc')
         elif self.msg.opcode is 19:
             cmd, id, result = self.msg.decode_msg_19(self.msg.raw_data)
-            if cmd == "vd":
-                # cmd = 'vd', id = file_id, result = file_sources
+            if cmd == "vd":               # id = file_id, result = file_sources
                 self.file_sources[id] = result
-                logging.debug("Resultado: %s" % (result))
                 logging.debug("File-[Sources]: %s" % (self.file_sources))
-                for s in result:
-#                if s not in self.source_id_hash:
-                    cmd = "vc %d" % (s)
-                    self.listener.send_cmd(cmd)
-            if cmd == "vc" and result:
-                # cmd = 'vc', id = source_id, result = source
+                for src in result:
+                    if src not in self.source_id_hash:
+                        cmd = "vc %d" % (src)
+                        self.listener.send_cmd(cmd)
+            if cmd == "vc" and result:    # id = source_id, result = (source, address)
                 source = result[0]
                 address = result[1]
                 for file in self.file_sources:

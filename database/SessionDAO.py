@@ -16,9 +16,9 @@ class SessionDAO(CommonDAO):
     def insert(self, session):
         startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	query = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
-            source_id, file_id, address_id) VALUES('%s', '%s', %s, %s, %s, %s, %s)" % \
+            source_id, file_id, address_id, kind) VALUES('%s', '%s', %s, %s, %s, %s, %s, '%s')" % \
             (self.tablename, startDate, startDate, session.downloaded, \
-            session.uploaded, session.source.id, session.file.id, session.address.id)
+            session.uploaded, session.source.id, session.file.id, session.address.id, session.kind)
         try:
             logging.debug(query);
             self.cursor.execute(query)
@@ -41,9 +41,9 @@ class SessionDAO(CommonDAO):
             else:
                 startDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 queryInsert = "INSERT INTO %s(start_date, last_update, downloaded, uploaded, \
-                    source_id, file_id, address_id) VALUES('%s', '%s', %s, %s, %s, %s, %s)" % \
+                    source_id, file_id, address_id, kind) VALUES('%s', '%s', %s, %s, %s, %s, %s, '%s')" % \
                     (self.tablename, startDate, startDate, session.downloaded, \
-                    session.uploaded, session.source.id, session.file.id, session.address.id)
+                    session.uploaded, session.source.id, session.file.id, session.address.id, session.kind)
                 logging.debug(queryInsert)
                 self.cursor.execute(queryInsert)
                 last = self.lastID(self.tablename)

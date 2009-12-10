@@ -187,6 +187,10 @@ class Message():
         session.downloaded = downloaded
         session.uploaded = uploaded
         session.source.id = client_id
+        if client_type==0:
+            session.kind = "lowID"
+        else:
+            session.kind = "highID"
     	return session
 
     # ClientState
