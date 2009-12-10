@@ -101,7 +101,7 @@ class MessageHandler:
                     session.source.id = srcdao.findByHash(sourceHash).id
                     session.address.id = addressId
                     session.file.id = fileId
-                    logging.debug("Source %d, File %d: Uploaded(%d), Donwloaded(%d))" % (source_id, file_id, session.uploaded, session.downloaded))
+                    logging.debug("Source %d, File %d: Uploaded(%d), Donwloaded(%d)" % (source_id, file_id, session.uploaded, session.downloaded))
                     #logging.debug(session.source.id)
                     sdao = SessionDAO()
                     sessionId = sdao.insertOrUpdate(session)            

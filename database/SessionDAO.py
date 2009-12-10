@@ -33,9 +33,10 @@ class SessionDAO(CommonDAO):
             s = self.findBySourceFileAddress(session.source.id, session.file.id, session.address.id)
             if s is not None:
                 lastUpdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                queryUpdate = "UPDATE %s SET last_update = %s, downloaded = %s, uploaded = %s \
+                queryUpdate = "UPDATE %s SET last_update = '%s', downloaded = %s, uploaded = %s \
                     WHERE id = %s" % (self.tablename, lastUpdate, session.downloaded, \
                     session.uploaded, s.id)
+                logging.debug(queryUpdate)
                 self.cursor.execute(queryUpdate)
                 return s.id
             else:
@@ -70,10 +71,12 @@ class SessionDAO(CommonDAO):
             session.source.id = row[5] 
             session.file.id = row[6] 
             session.address.id = row[7] 
+            session.kind = row[8] 
         return session 
 
     def findBySourceFileAddress(self, sourceId, fileId, addressId):
         query = "SELECT * FROM %s WHERE source_id = %s and file_id = %s and address_id = %s " % (self.tablename, sourceId, fileId, addressId)
+	logging.debug(query)
 	self.cursor.execute(query)
         rs = self.cursor.fetchall()
         if not rs:
@@ -88,5 +91,5 @@ class SessionDAO(CommonDAO):
             session.source.id = row[5] 
             session.file.id = row[6] 
             session.address.id = row[7] 
-
+            session.kind = row[8] 
         return session 
