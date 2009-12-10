@@ -65,6 +65,13 @@ the DonkeySurvey up and running.
 
     ./DonkeySurvey.py
 
+    Alternatively you can pass arguments through command line:
+    ex.: ./DonkeySurvey.py -d -b -U <user> -P <password> -o /var/log/donkeysurvey.log
+
+    Instructions on how to use the command line options can be found typing ./DonkeySurvey --help
+
+
+
 Database Configuration
 ======================
 
