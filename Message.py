@@ -210,10 +210,12 @@ class Message():
             if (cmd == "vd"):
                 try:
                     sources = re.split("sources:\n", msg)[1]
-                    m = re.compile("^  \[( +?\d+)\]", re.M)
+                    #logging.debug(sources)
+                    m = re.compile("^  \[( *?\d+)\]", re.M)
                     result =  m.findall(sources)
+                    #logging.debug(result)
                     b = [int(x) for x in result]
-                    #logging.debug(b)
+                    logging.debug("Sources RESULT (VD): %s" % (b))
                 except Exception, err:
                     return None, None, None
                 return cmd, arg, b
@@ -241,7 +243,7 @@ class Message():
                     osinfo = re.split(" ", m.findall(msg)[0])
                 except Exception, err:
                     osinfo = ['','']
-                logging.debug("RESULT: %s | MSG: %s", result, msg)
+                logging.debug("RESULT (VC): %s" % (result))
                 source.name = result[9] 
                 source.hash = md4[1]
                 source.software = "%s %s" % (result[6], result[7])
