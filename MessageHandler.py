@@ -58,7 +58,7 @@ class MessageHandler:
                 fdao = FileDAO()  
                 fileId = fdao.findByHash(self.file_id_hash[file_id]).id
                 shfdao = SourceHasFileDAO()
-                shfdao.insertOrUpdate(fileId, sourceId, availability)
+                shfdao.insertOrUpdate(sourceId, fileId, availability)
 
         # Message: FileAddSource
         # Action: none

@@ -17,8 +17,8 @@ class SourceTestCase(unittest.TestCase):
         source.hash = self.hash 
         source.software = 'mldonkey 3.1.2'
         source.osinfo = 'Linux'
-        sid = sdao.insert(source)
-        assert sid != -1, 'error inserting source'
+        sid = sdao.insertOrUpdate(source)
+        assert sid is not None, 'error inserting source'
         
     def testSelect(self):
         sdao = SourceDAO()
